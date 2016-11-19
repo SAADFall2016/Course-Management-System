@@ -2,10 +2,16 @@ package system_source_code;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 public class CourseCatalogue {
 
 	static List<Course> courses;
+	private UUID semesterID;
+	
+	public CourseCatalogue(UUID semesterID) {
+		setSemesterID(semesterID);
+	}
 
 	public static Course getCourse(int courseId) {
 		for (Iterator<Course> iterator = courses.iterator(); iterator.hasNext();) {
@@ -39,5 +45,13 @@ public class CourseCatalogue {
 
 	public void addCourse(Course course) {
 		CourseCatalogue.courses.add(course);
+	}
+
+	public UUID getSemesterID() {
+		return semesterID;
+	}
+
+	public void setSemesterID(UUID semesterID) {
+		semesterID = semesterID;
 	}
 }
