@@ -47,6 +47,9 @@ public class Admin extends Person implements IPredicionTool {
 		utility.designateSemester(semId);
 		ArrayList<?> predictions = getDataPreditions();
 		selectInstructorAssignments(predictions);
+		//for each course
+		
+		assignInstructorForCourse( 1);//dummy val
 
 		ArrayList<CourseRequest> request = new ArrayList<CourseRequest>();
 		request = createRequests(Utility.parseCSV(Utility.requests));
