@@ -325,6 +325,11 @@ public class Utility {
 	protected static void designateSemester(UUID semId) {
 		if (mode.equals(Mode.Initial)) {
 
+			// load Academic records history file
+
+			ArrayList<Record> records = createRecords(parseCSV(recordscsvFile));
+			setRecords(records);
+
 			// load Students csv
 			// for creating students
 
@@ -341,11 +346,6 @@ public class Utility {
 			ArrayList<ArrayList<Object>> prerequistes = parseCSV(prereqs);
 			addPrerequisiteCourse(prerequistes, courses);
 
-			// load Academic records history file
-
-			ArrayList<Record> records = createRecords(parseCSV(recordscsvFile));
-			setRecords(records);
-
 			// designate upcoming semester
 			// for creating Courses
 			ArrayList<Course> courses = createCourse(parseCSV(coursescsvFile));
@@ -354,7 +354,19 @@ public class Utility {
 			// upload Instructor assignment file
 			ArrayList<ArrayList<Object>> assignmentlist = parseCSV(assignments);
 			addAssignments(assignmentlist);
+			
+		}
+	}
+	
+	public static String getCourseName(Object value) {
+		for (Iterator<?> iterator = Utility.getCourses().iterator(); iterator
+				.hasNext();) {
+			Course course = (Course) iterator.next();
+			if (course.getCourseID() == value) {
+				return course.getCourseTitle();
+			}
 
 		}
+		return null;
 	}
 }

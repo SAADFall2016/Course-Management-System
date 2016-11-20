@@ -8,7 +8,7 @@ public class CourseCatalogue {
 
 	static List<Course> courses;
 	private UUID semesterID;
-	
+
 	public CourseCatalogue(UUID semesterID) {
 		setSemesterID(semesterID);
 	}
@@ -32,7 +32,7 @@ public class CourseCatalogue {
 		for (Iterator<Course> iterator = courses.iterator(); iterator.hasNext();) {
 			Course course = (Course) iterator.next();
 			if (course.getSemestersOffered().contains(semester))
-			number = number + 1;
+				number = number + 1;
 
 		}
 
