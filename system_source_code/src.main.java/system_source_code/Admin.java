@@ -1,13 +1,20 @@
 package system_source_code;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class Admin extends Person implements IPredicionTool {
 	Utility utility;
 
+	
+	public static void main(String args[])
+	{
+		Admin admin = new Admin(1,"Kanika","abc","123456");
+		admin.processSemester(UUID.randomUUID());
+	}
+	
 	Admin(int UUID, String Name, String Address, String PhoneNumber) {
 		super(UUID, Name, Address, PhoneNumber);
-		utility = new Utility();
 	}
 
 	@Override
@@ -33,8 +40,11 @@ public class Admin extends Person implements IPredicionTool {
 
 	}
 
-	public void processSemester(Integer semId) {
-
+	public void processSemester(UUID semId) {
+ 
+		utility = new Utility(Mode.Initial);
+		utility.designateSemester(semId);
+		
 	}
 
 }

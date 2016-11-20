@@ -24,7 +24,7 @@ public class Digest {
 
 	public static String cvsSplitBy = ",";
 	public static ArrayList<String> displayrequst = new ArrayList<String>();
-	static Utility util = new Utility();
+	static Utility util = new Utility(Mode.Initial);
 
 	public static void add_records(Integer studentID, Integer courseID,
 			Integer instructorID, String instructorComment, Grade grade) {
