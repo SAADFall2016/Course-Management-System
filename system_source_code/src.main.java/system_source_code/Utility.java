@@ -369,4 +369,9 @@ public class Utility {
 		}
 		return null;
 	}
+	
+	public static void processRequestStatus(String message,CourseRequest courserequest)
+	{
+		
+	}
 }

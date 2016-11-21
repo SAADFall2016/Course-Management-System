@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class Admin extends Person implements IPredicionTool {
@@ -47,12 +48,35 @@ public class Admin extends Person implements IPredicionTool {
 		utility.designateSemester(semId);
 		ArrayList<?> predictions = getDataPreditions();
 		selectInstructorAssignments(predictions);
-		//for each course
-		
-		assignInstructorForCourse( 1);//dummy val
+		// for each course
 
-		ArrayList<CourseRequest> request = new ArrayList<CourseRequest>();
-		request = createRequests(Utility.parseCSV(Utility.requests));
+		assignInstructorForCourse(1);// dummy val
+		List<Course> courses = CourseCatalogue.getCourses();
+		for (Iterator iterator = courses.iterator(); iterator.hasNext();) {
+			Course course = (Course) iterator.next();
+			calculateCourseCapacity(course.getCourseID());
+		}
+
+		ArrayList<CourseRequest> requests = new ArrayList<CourseRequest>();
+		requests = createRequests(Utility.parseCSV(Utility.requests));
+
+		ArrayList<Student> students = Utility.getStudents();
+
+		for (Iterator iterator = requests.iterator(); iterator.hasNext();) {
+			CourseRequest request = (CourseRequest) iterator.next();
+			for (Iterator<Student> iterator1 = students.iterator(); iterator1
+					.hasNext();) {
+				Student student = (Student) iterator1.next();
+				if (student.getUUID().equals(request.getStudenttId())) {
+					String result = student.enrollInCourse((int) request
+							.getCourseId());
+
+					Utility.processRequestStatus(result, request);
+
+				}
+			}
+
+		}
 
 	}
 
@@ -70,8 +94,7 @@ public class Admin extends Person implements IPredicionTool {
 		return request;
 
 	}
-	
-	
+
 	public static void check_request(CourseRequest request) {
 
 		ArrayList<Student> students = Utility.getStudents();
@@ -82,9 +105,11 @@ public class Admin extends Person implements IPredicionTool {
 				String result = student.enrollInCourse(request.getCourseId());
 				System.out.println(result);
 				if (result.equals(Student.validRequest)) {
-					String res = student.getUUID().toString() + ',' + student.getName()
-							+ ',' + request.getCourseId() + ',' + Utility.getCourseName(request.getCourseId());
-					//displayrequst.add(res);
+					String res = student.getUUID().toString() + ','
+							+ student.getName() + ',' + request.getCourseId()
+							+ ','
+							+ Utility.getCourseName(request.getCourseId());
+					// displayrequst.add(res);
 				}
 
 			}
