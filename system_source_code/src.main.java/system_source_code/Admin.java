@@ -11,7 +11,7 @@ public class Admin extends Person implements IPredicionTool {
 	Utility utility;
 
 	public static void main(String args[]) {
-		Admin admin = new Admin(1, "Kanika", "abc", "123456");
+		Admin admin = new Admin(1, "Kanika", "389 Canterbury Drive 48531", "123456");
 		admin.processSemester(UUID.randomUUID());
 	}
 

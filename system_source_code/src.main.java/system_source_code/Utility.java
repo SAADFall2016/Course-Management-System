@@ -293,7 +293,7 @@ public class Utility {
 		String line = "";
 		ArrayList<ArrayList<Object>> result = new ArrayList<ArrayList<Object>>();
 		try {
-			InputStream stream = Utility.class.getClass().getClassLoader()
+			InputStream stream = Utility.class.getClassLoader()
 					.getResourceAsStream(csvFile);
 			br = new BufferedReader(new InputStreamReader(stream));
 
