@@ -10,8 +10,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+
 
 public class Utility {
 
@@ -22,19 +25,36 @@ public class Utility {
 	private static ArrayList<Student> students;
 	private static ArrayList<Record> records;
 
-	static String recordscsvFile = "records.csv";
-	static String studentscsvFile = "students.csv";
-	static String instructorscsvFile = "instructors.csv";
-	static String coursescsvFile = "courses.csv";
-	static String prereqs = "prereqs.csv";
-	static String assignments = "assignments.csv";
-	static String requests = "requests.csv";
+	private static String recordscsvFile = "records.csv";
+	private static String studentscsvFile = "students.csv";
+	private static String instructorscsvFile = "instructors.csv";
+	private static String coursescsvFile = "courses.csv";
+	private static String prereqs = "prereqs.csv";
+	private static String assignments = "assignments.csv";
+	private static String requests = "requests.csv";
+	
+	//Amruta
+	 private static final String COMMA_DELIMITER = ",";
+	 private static final String NEW_LINE_SEPARATOR = "\n";
+	 private static  String FILE_HEADER = "";
+	  private static String projrecordsfile = "projectedrecords.csv";
+	  //Amruta
+	
+	private static  String new_line_separater = "\n";
+	 private static  String file_header = "";
+
 	protected static CourseCatalogue courseCatalogue;
 	private static Mode mode;
 
 	Utility(Mode mode) {
 		this.mode = mode;
 
+	}
+	
+	public static  void CreateRecordsProjections()
+	{
+		List<Integer> uniqueStudents = new ArrayList<Integer>();
+		
 	}
 
 	private static void addAssignments(
@@ -94,6 +114,7 @@ public class Utility {
 				String PhoneNumber = (String) parseCSV.get(i).get(3);
 				Student student = new Student(UUID, Name, Address, PhoneNumber);
 				students.add(student);
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -374,4 +395,108 @@ public class Utility {
 	{
 		
 	}
+	
+	//Amruta
+		public void getProjectedRecords() 
+		{
+			List<Integer> uniqueStudents = new ArrayList<Integer>();
+			List<Integer> uniqueCourses = new ArrayList<Integer>();
+		
+			
+			for(Record rec:records)
+			{
+				int sid = rec.getStudentID();
+				int cid = rec.getCourseID();
+				
+				if(!uniqueStudents.contains(sid))
+						{
+							uniqueStudents.add(sid);
+						}
+				if(!uniqueCourses.contains(cid))
+				{
+					uniqueCourses.add(cid);
+				}
+			
+			}
+			
+			
+			for(Integer cid:uniqueCourses)
+			{
+				FILE_HEADER = FILE_HEADER + "Course"+cid+COMMA_DELIMITER;
+			}
+			
+			FILE_HEADER = "Student,"+FILE_HEADER;
+			FILE_HEADER = FILE_HEADER.substring(0, FILE_HEADER.lastIndexOf(','));
+			
+			//System.out.println("file header "+FILE_HEADER);
+			
+			 FileWriter fileWriter = null;
+
+			 try {
+				
+				 fileWriter = new FileWriter(projrecordsfile);
+				//Add header
+				 fileWriter.append(FILE_HEADER.toString());
+				 fileWriter.append(NEW_LINE_SEPARATOR);
+					
+				 for(Integer sid:uniqueStudents)
+					{
+						fileWriter.append(String.valueOf(sid));
+						fileWriter.append(COMMA_DELIMITER);
+						
+						for(int i = 0; i <uniqueCourses.size();i++)
+						{
+							if(studentCoursePairExists(sid,uniqueCourses.get(i)))
+								fileWriter.append("taken");
+							else
+								fileWriter.append("none");
+							
+							if(i!=uniqueCourses.size()-1)
+								fileWriter.append(COMMA_DELIMITER);
+								
+						}
+						
+						
+						fileWriter.append(NEW_LINE_SEPARATOR);
+
+					}
+
+				 System.out.println("CSV file was created successfully !!!");
+
+				 
+			} catch (IOException e) {
+				
+				System.out.println("Error in CsvFileWriter !!!");
+				e.printStackTrace();
+			}
+			 finally {
+				          try {
+				 
+				                 fileWriter.flush();
+				 
+				                 fileWriter.close();
+				 
+				             } catch (IOException e) {
+				 
+				                 System.out.println("Error while flushing/closing fileWriter !!!");
+				 
+				                 e.printStackTrace();
+				 
+				             }
+			 }
+				              
+
+			
+		}//Amruta
+		
+		//Amruta
+		public static boolean studentCoursePairExists(int sid,int cid)
+		{
+			for(Record rec:records)
+			{
+				if(rec.getCourseID()==cid && rec.getStudentID()==sid)
+					return true;
+			}
+			return false;
+		}//Amruta
 }
