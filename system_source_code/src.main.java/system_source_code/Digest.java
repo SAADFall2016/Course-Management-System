@@ -331,7 +331,18 @@ public class Digest {
 		
 		Admin admin = new Admin();
 		admin.readPredictions();
+		admin.setUtility(util);//set same utility instance
 		
+		int noOfSems = getNoOfSemesters();
+		
+		for(int i=0;i<noOfSems;i++)
+		{
+			admin.processSemester(i+1);
+		}
+		
+		//Check how many semesters we are dealing with and process each semesters.
+		
+		//Steps 3 to 10 will be wrapped inside Admin processSemester method.
 		//Step3 :Roster selection:> Display :ToDo
 		
 		//Step4 :Roster add/delete instructor assignment :ToDo
@@ -353,6 +364,13 @@ public class Digest {
 		
 		//Step10 :Repeat loop.
 		
+		
+	}
+	
+	public static int getNoOfSemesters()
+	{
+		int num = 0;
+		return 1;//todo count no of assignments file
 		
 	}
 

@@ -2,6 +2,8 @@ package system_source_code;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,14 +26,16 @@ public class Utility {
 	private static ArrayList<Instructor> instructors;
 	private static ArrayList<Student> students;
 	private static ArrayList<Record> records;
+	private static ArrayList<ArrayList<Object>> assignments;
 
 	private static String recordscsvFile = "records.csv";
 	private static String studentscsvFile = "students.csv";
 	private static String instructorscsvFile = "instructors.csv";
 	private static String coursescsvFile = "courses.csv";
-	private static String prereqs = "prereqs.csv";
-	private static String assignments = "assignments.csv";
-	private static String requests = "requests.csv";
+	private static String prereqscsvFile = "prereqs.csv";
+	private static String assignmentsCSVFile = "assignments";
+	private static String requestscsvFile = "requests.csv";
+	private static String modecsvFile = "mode.csv";
 	
 	//Amruta
 	 private static final String COMMA_DELIMITER = ",";
@@ -44,19 +48,60 @@ public class Utility {
 	 private static  String file_header = "";
 
 	protected static CourseCatalogue courseCatalogue;
-	private static Mode mode;
+	private static AppMode mode;
 
-	Utility(Mode mode) {
-		this.mode = mode;
+	Utility() {
+		
+		this.mode = readMode();//Read current mode from mode.csv file.
 
 	}
 	
-	public static  void CreateRecordsProjections()
-	{
-		List<Integer> uniqueStudents = new ArrayList<Integer>();
-		
-	}
 
+	//Amruta
+	private AppMode readMode()
+	{
+		  BufferedReader br = null;
+		  String path = modecsvFile;
+		 AppMode mode = AppMode.Initial;
+		 String line = "";
+		  
+		  try
+		  {
+			  br = new BufferedReader(new FileReader(path));
+			  while ((line = br.readLine()) != null) {
+				  
+				  switch(line.toLowerCase())
+				  {
+				  	case "initial":
+				  		mode = AppMode.Initial;
+				  		break;
+				  	case "resume":
+				  		mode = AppMode.Resume;
+				  		break;
+				  }
+			  }
+		  }
+		  catch (FileNotFoundException e) {
+		         e.printStackTrace();
+		     } catch (IOException e) {
+		         e.printStackTrace();
+		     }catch(Exception e)
+		  	{
+		     	  e.printStackTrace();
+		  	}
+		  	finally {
+		         if (br != null) {
+		             try {
+		                 br.close();
+		             } catch (IOException e) {
+		                 e.printStackTrace();
+		             }
+		         }
+		     }
+		  
+		  return mode;
+	}
+	
 	private static void addAssignments(
 			ArrayList<ArrayList<Object>> assignmentlist) {
 
@@ -237,7 +282,12 @@ public class Utility {
 	public static void setRecords(ArrayList<Record> records) {
 		Utility.records = records;
 	}
-
+	
+	public static ArrayList<ArrayList<Object>> getAssignments()
+	{
+		return assignments;
+	}
+	
 	public static int getStudentsNotTakenAnyCourse() {
 		// for number of students who havn't taken any class
 		HashSet<Integer> studentIds = new HashSet<Integer>();
@@ -343,40 +393,43 @@ public class Utility {
 		return result;
 	}
 
-	protected static void designateSemester(UUID semId) {
-		if (mode.equals(Mode.Initial)) {
+	protected static void designateSemester(int semId) {
+		
+		// load Students csv
+					// for creating students
+		ArrayList<Student> students = createStudents(new Digest()
+				.parseCSV(studentscsvFile));
+				setStudents(students);
 
-			// load Academic records history file
-
-			ArrayList<Record> records = createRecords(parseCSV(recordscsvFile));
-			setRecords(records);
-
-			// load Students csv
-			// for creating students
-
-			ArrayList<Student> students = createStudents(new Digest()
-					.parseCSV(studentscsvFile));
-			setStudents(students);
-
-			// for creating Instructors
+		// for creating Instructors
 			ArrayList<Instructor> instructors = createInstructor(new Digest()
-					.parseCSV(instructorscsvFile));
+						.parseCSV(instructorscsvFile));
 			setInstructors(instructors);
+			
+			// designate upcoming semeste
+			// for creating Courses
+				ArrayList<Course> courses = createCourse(parseCSV(coursescsvFile));
+				setCourses(courses);
 
-			// adding Prerequisite to Courses
-			ArrayList<ArrayList<Object>> prerequistes = parseCSV(prereqs);
+		// adding Prerequisite to Courses
+			ArrayList<ArrayList<Object>> prerequistes = parseCSV(prereqscsvFile);
 			addPrerequisiteCourse(prerequistes, courses);
 
-			// designate upcoming semester
-			// for creating Courses
-			ArrayList<Course> courses = createCourse(parseCSV(coursescsvFile));
-			setCourses(courses);
 
+		if (mode.equals(AppMode.Initial)) {
+
+			//records file has been already loaded.
+			
 			// upload Instructor assignment file
-			ArrayList<ArrayList<Object>> assignmentlist = parseCSV(assignments);
-			addAssignments(assignmentlist);
+			assignments = parseCSV(assignmentsCSVFile+"_"+semId+".csv");
+			addAssignments(assignments);
 			
 		}
+		else
+		{
+			//todo use intermediate assignments file for semester N+1
+		}
+		
 	}
 	
 	public static String getCourseName(Object value) {
@@ -461,7 +514,7 @@ public class Utility {
 
 					}
 
-				 System.out.println("CSV file was created successfully !!!");
+				 System.out.println("Tmp Msg: CSV file was created successfully !!!");
 
 				 
 			} catch (IOException e) {
@@ -498,5 +551,22 @@ public class Utility {
 					return true;
 			}
 			return false;
+		}//Amruta
+		
+		//Amruta
+		public static void display_assignments() {
+			
+			/*ArrayList<ArrayList<Object>> assignments = getAssignments();
+			
+			for (Iterator<ArrayList<Object>> iterator = assignments.iterator(); iterator
+					.hasNext();) {
+				ArrayList<Object> arrayList = (ArrayList<Object>) iterator.next();
+
+				//todo print the selection
+
+				}*/
+			
+			System.out.println("ToDo print assignments here..");
+			
 		}//Amruta
 }

@@ -1,5 +1,8 @@
 package system_source_code;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,7 +16,7 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.NumericToNominal;
 
 public class Admin extends Person implements IPredicionTool {
-	Utility utility;
+	private Utility utility;
 	 String projRecordsFilepah = "projectedrecords.csv";
 
 	/*public static void main(String args[]) {
@@ -94,13 +97,47 @@ public class Admin extends Person implements IPredicionTool {
 	public void calculateCourseCapacity(Integer courseId) {
 
 	}
+	
+	
 
-	public void processSemester(UUID semId) {
-
+	public void processSemester(int semId) {
+		
+		System.out.println("Processing semester number "+semId);
+		//Designate semester
+		utility.designateSemester(semId);
+		
+		boolean isInvalidInput = false;
+		do
+		{
+			System.out.print("$roster selection >");
+			 BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			 
+			 String input = "";
+			 try {
+				input = br.readLine();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			 switch(input.toLowerCase())
+				{
+				case "display":
+				//Step3 :Roster selection:> Display :ToDo
+					utility.display_assignments();
+				 break;
+				 default:
+				case "quit":
+					isInvalidInput = true;
+					break;
+				}
+		}
+		while(!isInvalidInput);
+		
+		System.out.println("stopping the command loop");
 		
 		
 		
-		utility = new Utility();
+		/*utility = new Utility();
 		utility.designateSemester(semId);
 		ArrayList<?> predictions = getDataPreditions();
 		selectInstructorAssignments(predictions);
@@ -133,7 +170,7 @@ public class Admin extends Person implements IPredicionTool {
 				}
 			}
 
-		}
+		}*/
 
 	}
 
@@ -178,6 +215,14 @@ public class Admin extends Person implements IPredicionTool {
 	private void selectInstructorAssignments(ArrayList<?> predictions) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public Utility getUtility() {
+		return utility;
+	}
+
+	public void setUtility(Utility utility) {
+		this.utility = utility;
 	}
 
 }
