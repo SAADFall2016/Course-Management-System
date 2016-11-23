@@ -6,23 +6,76 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
+import weka.associations.Apriori;
+import weka.core.Instances;
+import weka.core.converters.ConverterUtils.DataSource;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.NumericToNominal;
 
 public class Admin extends Person implements IPredicionTool {
 	Utility utility;
+	 String projRecordsFilepah = "projectedrecords.csv";
 
-	public static void main(String args[]) {
+	/*public static void main(String args[]) {
 		Admin admin = new Admin(1, "Kanika", "389 Canterbury Drive 48531", "123456");
 		admin.processSemester(UUID.randomUUID());
-	}
+	}*/
 
 	Admin(int UUID, String Name, String Address, String PhoneNumber) {
 		super(UUID, Name, Address, PhoneNumber);
 	}
+	
+	public Admin()
+	{
+		
+	}
 
 	@Override
-	public ArrayList<?> readPredictions() {
-		// TODO Auto-generated method stub
-		return null;
+	public void readPredictions() {
+		
+		 // load data
+	    Instances data = null;
+	    Instances newData = null;
+		
+			try {
+				data = DataSource.read(projRecordsFilepah);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+		
+		if(data!=null)
+		{
+		    data.setClassIndex(data.numAttributes() - 1);
+		    
+		    newData = data;
+			
+			NumericToNominal filter = new NumericToNominal();
+			
+		    try {
+				filter.setInputFormat(newData);
+				newData = Filter.useFilter(newData, filter);
+				
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} 
+	
+		    // build associator
+		    Apriori apriori = new Apriori();
+		    apriori.setClassIndex(newData.classIndex());
+		    try {
+				apriori.buildAssociations(newData);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	
+		    // output associator
+		    System.out.println(apriori);
+		}
+	
 	}
 
 	public void assignInstructorForCourse(Integer courseId) {
@@ -44,7 +97,10 @@ public class Admin extends Person implements IPredicionTool {
 
 	public void processSemester(UUID semId) {
 
-		utility = new Utility(Mode.Initial);
+		
+		
+		
+		utility = new Utility();
 		utility.designateSemester(semId);
 		ArrayList<?> predictions = getDataPreditions();
 		selectInstructorAssignments(predictions);
@@ -58,7 +114,8 @@ public class Admin extends Person implements IPredicionTool {
 		}
 
 		ArrayList<CourseRequest> requests = new ArrayList<CourseRequest>();
-		requests = createRequests(Utility.parseCSV(Utility.requests));
+		//Amruta: Commented below line due to error
+		//requests = createRequests(Utility.parseCSV(Utility.requests));
 
 		ArrayList<Student> students = Utility.getStudents();
 

@@ -24,7 +24,8 @@ public class Digest {
 
 	public static String cvsSplitBy = ",";
 	public static ArrayList<String> displayrequst = new ArrayList<String>();
-	static Utility util = new Utility(Mode.Initial);
+	static Utility util = new Utility();
+	
 
 	public static void add_records(Integer studentID, Integer courseID,
 			Integer instructorID, String instructorComment, Grade grade) {
@@ -303,102 +304,56 @@ public class Digest {
 	}
 
 	public static void main(String args[]) throws URISyntaxException {
+		//Amruta : Removed code for old digest print
+		
+		//Pre1: Read the Mode.csv to check current mode :Code done
+		
+		//Pre2: Load semester independent files records.csv and requests.csv:Done
 		String recordscsvFile = "records.csv";
-		String studentscsvFile = "students.csv";
-		String instructorscsvFile = "instructors.csv";
-		String coursescsvFile = "courses.csv";
-		String prereqs = "prereqs.csv";
-		String assignments = "assignments.csv";
-		String requests = "requests.csv";
-
-		// creating instance of utility class to delegate operations
-
-		// for creating students
-		ArrayList<Student> students = createStudents(new Digest()
-				.parseCSV(studentscsvFile));
-		util.setStudents(students);
-
-		// for creating Courses
-		ArrayList<Course> courses = createCourse(new Digest()
-				.parseCSV(coursescsvFile));
-		CourseCatalogue.setCourses(courses);
-		util.setCourses(courses);
-
-		// for creating Instructors
-		ArrayList<Instructor> instructors = createInstructor(new Digest()
-				.parseCSV(instructorscsvFile));
-		util.setInstructors(instructors);
-
 		// for creating records
 		ArrayList<Record> records = createRecords(new Digest()
-				.parseCSV(recordscsvFile));
+						.parseCSV(recordscsvFile));
 		util.setRecords(records);
 
-		ArrayList<ArrayList<Object>> prerequistes = new Digest()
-				.parseCSV(prereqs);
-		addPrerequisiteCourse(prerequistes, courses);
-
-		ArrayList<ArrayList<Object>> assignmentlist = new Digest()
-				.parseCSV(assignments);
-		addAssignments(assignmentlist);
-
-		HashMap<Integer, Integer> request = new LinkedHashMap<>();
-		request = createRequests(new Digest().parseCSV(requests));
-
-		// to print number of records in requests.csv
-		System.out.println(request.size());
-
-		displayRequestdigest(request, students);
-		boolean quit = true;
-
-		System.out.print("$main:");
-		Scanner scin = new Scanner(System.in);
-		while (quit) {
-			String input = scin.nextLine();
-			Object[] elements = input.split(cvsSplitBy);
-			switch ((String) elements[0]) {
-			case "display_requests":
-				display_request();
-				System.out.print("$main:");
-				break;
-			case "display_seats":
-				display_seats();
-				System.out.print("$main:");
-				break;
-			case "display_records":
-				display_records();
-				System.out.print("$main:");
-				break;
-			case "add_record":
-				add_records(Integer.parseInt((String) elements[1]),
-						Integer.parseInt((String) elements[2]),
-						Integer.parseInt((String) elements[3]),
-						(String) elements[4],
-						Grade.valueOf((String) elements[5]));
-				System.out.print("$main:");
-				break;
-			case "add_seats":
-				add_seats(Integer.parseInt((String) elements[1]),
-						Integer.parseInt((String) elements[2]));
-				System.out.print("$main:");
-				break;
-			case "check_request":
-				check_request(Integer.parseInt((String) elements[1]),
-						Integer.parseInt((String) elements[2]));
-				System.out.print("$main:");
-				break;
-			case "quit":
-				quit = false;
-				System.out.println("stopping the command loop");
-				return;
-			default:
-				System.out.println("Wrong input");
-				System.out.print("$main:");
-
-			}
-		}
-
-		scin.close();
+		
+		//Amruta: Todo : Why we do not have request object?
+		/*String requestscsvFile = "requests.csv";
+		// for creating requests
+		ArrayList<Request> requests = createRecords(new Digest()
+						.parseCSV(requestscsvFile));
+		util.setRequests(requests);*/
+		
+		
+		//Step1 :Convert records.csv to projectedrecords file:Done
+		util.getProjectedRecords();
+		
+		//Step2 :Run Weka apriori and generate data analysis output:Done
+		
+		Admin admin = new Admin();
+		admin.readPredictions();
+		
+		//Step3 :Roster selection:> Display :ToDo
+		
+		//Step4 :Roster add/delete instructor assignment :ToDo
+		
+		//Step5 :Roster: Submit + Recalculate course capacity:Todo
+		
+		//Step6 : Load current Requests.csv file for semester N: Todo
+		//Sem1 for initial mode, SemN forresume mode
+		
+		//Step7: Validate Student Requests : ToDo
+		
+		//Step8 :Add granted requests to records.csv file with random grades: Todo
+		//Note: Do not modify original records.csv as it might be needed if user restarts in intial mode,instead of resuming.
+		//Display updated records
+		
+		//Step9: Update Requests.csv with waitlisted requests: ToDo
+		//Note: Do not modify original requests.csv as it might be needed if user restarts in intial mode,instead of resuming.
+		//Display updated requests
+		
+		//Step10 :Repeat loop.
+		
+		
 	}
 
 	// public ArrayList<ArrayList<Object>> parseCSV(String csvFile) throws

@@ -4,6 +4,6 @@ import java.util.ArrayList;
 
 public interface IPredicionTool {
 
-	ArrayList<?> readPredictions();
+	void readPredictions();
 	
 }

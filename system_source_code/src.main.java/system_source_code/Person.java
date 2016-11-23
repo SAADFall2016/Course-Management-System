@@ -20,6 +20,10 @@ public class Person {
 		this.PhoneNumber = PhoneNumber;
 	}
 
+	Person()
+	{
+		
+	}
 	public Address getAddress() {
 		return Address;
 	}
