@@ -24,7 +24,8 @@ public class Digest {
 
 	public static String cvsSplitBy = ",";
 	public static ArrayList<String> displayrequst = new ArrayList<String>();
-	static Utility util = new Utility();
+	static Utility util;
+	static AppMode currentMode;
 	
 
 	public static void add_records(Integer studentID, Integer courseID,
@@ -304,67 +305,43 @@ public class Digest {
 	}
 
 	public static void main(String args[]) throws URISyntaxException {
-		//Amruta : Removed code for old digest print
 		
-		//Pre1: Read the Mode.csv to check current mode :Code done
-		
-		//Pre2: Load semester independent files records.csv and requests.csv:Done
-		String recordscsvFile = "records.csv";
-		// for creating records
-		ArrayList<Record> records = createRecords(new Digest()
-						.parseCSV(recordscsvFile));
-		util.setRecords(records);
-
-		
-		//Amruta: Todo : Why we do not have request object?
-		/*String requestscsvFile = "requests.csv";
-		// for creating requests
-		ArrayList<Request> requests = createRecords(new Digest()
-						.parseCSV(requestscsvFile));
-		util.setRequests(requests);*/
-		
-		
-		//Step1 :Convert records.csv to projectedrecords file:Done
-		util.getProjectedRecords();
-		
-		//Step2 :Run Weka apriori and generate data analysis output:Done
-		
+		String strMode = args[0];
+		switch(strMode.toLowerCase())
+		{
+			case "initial":
+				util = new Utility(AppMode.Initial);
+				currentMode = AppMode.Initial;
+				break;
+			case "resume":
+				util = new Utility(AppMode.Resume);
+				currentMode = AppMode.Resume;
+				break;
+		}
+	
 		Admin admin = new Admin();
-		admin.readPredictions();
 		admin.setUtility(util);//set same utility instance
 		
+		//Check how many semesters we are dealing with and process each semesters.
 		int noOfSems = getNoOfSemesters();
-		
-		for(int i=0;i<noOfSems;i++)
+		int currentSem = 1;
+		if(currentMode == AppMode.Resume)
 		{
-			admin.processSemester(i+1);
+			currentSem = getCurrentResumedSemNumber();
 		}
 		
-		//Check how many semesters we are dealing with and process each semesters.
-		
-		//Steps 3 to 10 will be wrapped inside Admin processSemester method.
-		//Step3 :Roster selection:> Display :ToDo
-		
-		//Step4 :Roster add/delete instructor assignment :ToDo
-		
-		//Step5 :Roster: Submit + Recalculate course capacity:Todo
-		
-		//Step6 : Load current Requests.csv file for semester N: Todo
-		//Sem1 for initial mode, SemN forresume mode
-		
-		//Step7: Validate Student Requests : ToDo
-		
-		//Step8 :Add granted requests to records.csv file with random grades: Todo
-		//Note: Do not modify original records.csv as it might be needed if user restarts in intial mode,instead of resuming.
-		//Display updated records
-		
-		//Step9: Update Requests.csv with waitlisted requests: ToDo
-		//Note: Do not modify original requests.csv as it might be needed if user restarts in intial mode,instead of resuming.
-		//Display updated requests
-		
-		//Step10 :Repeat loop.
+		for(;currentSem<=noOfSems;currentSem++)
+		{
+			admin.processSemester(currentSem);
+		}
 		
 		
+	}
+	
+	public static int getCurrentResumedSemNumber()
+	{
+		//todo
+		return 1;
 	}
 	
 	public static int getNoOfSemesters()

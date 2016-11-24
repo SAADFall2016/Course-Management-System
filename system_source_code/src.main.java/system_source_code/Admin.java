@@ -18,6 +18,7 @@ import weka.filters.unsupervised.attribute.NumericToNominal;
 public class Admin extends Person implements IPredicionTool {
 	private Utility utility;
 	 String projRecordsFilepah = "projectedrecords.csv";
+	 private static final String EmptyString = "";
 
 	/*public static void main(String args[]) {
 		Admin admin = new Admin(1, "Kanika", "389 Canterbury Drive 48531", "123456");
@@ -102,7 +103,17 @@ public class Admin extends Person implements IPredicionTool {
 
 	public void processSemester(int semId) {
 		
-		System.out.println("Processing semester number "+semId);
+		System.out.println("Tmp comment: Processing semester number "+semId);
+		
+		AppMode currentMode = Utility.getMode();
+		
+		utility.processRecords(currentMode,semId);
+		
+		//Step1 :Convert records.csv to projectedrecords file:Done
+		utility.getProjectedRecords();
+		
+		readPredictions();
+		
 		//Designate semester
 		utility.designateSemester(semId);
 		
@@ -112,7 +123,7 @@ public class Admin extends Person implements IPredicionTool {
 			System.out.print("$roster selection >");
 			 BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 			 
-			 String input = "";
+			 String input = EmptyString;
 			 try {
 				input = br.readLine();
 			} catch (IOException e) {

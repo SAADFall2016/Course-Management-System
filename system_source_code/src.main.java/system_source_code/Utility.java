@@ -28,6 +28,7 @@ public class Utility {
 	private static ArrayList<Record> records;
 	private static ArrayList<ArrayList<Object>> assignments;
 
+	private static String recordsFileName = "records";
 	private static String recordscsvFile = "records.csv";
 	private static String studentscsvFile = "students.csv";
 	private static String instructorscsvFile = "instructors.csv";
@@ -42,6 +43,7 @@ public class Utility {
 	 private static final String NEW_LINE_SEPARATOR = "\n";
 	 private static  String FILE_HEADER = "";
 	  private static String projrecordsfile = "projectedrecords.csv";
+	  private static String projectedRecordsFileName = "projectedrecords";
 	  //Amruta
 	
 	private static  String new_line_separater = "\n";
@@ -52,10 +54,33 @@ public class Utility {
 
 	Utility() {
 		
-		this.mode = readMode();//Read current mode from mode.csv file.
+		this.setMode(readMode());//Read current mode from mode.csv file.
 
 	}
 	
+	Utility(AppMode amode)
+	{
+		this.setMode(amode);
+	}
+	
+	//process records file as per current mode
+	
+	public  void processRecords(AppMode mode, int semId)
+	{
+		if(mode == AppMode.Resume)
+		{
+			recordscsvFile = recordsFileName + "_"+semId;
+			projrecordsfile = projectedRecordsFileName+"_"+semId;
+		}
+		//Pre2: Load semester independent files records.csv and requests.csv, student.csv ....:To be Done
+		String recordscsvFile = "records.csv";
+		// for creating records
+		
+		ArrayList<Record> records = createRecords(new Digest()
+								.parseCSV(recordscsvFile));
+		setRecords(records);
+		
+	}
 
 	//Amruta
 	private AppMode readMode()
@@ -393,7 +418,7 @@ public class Utility {
 		return result;
 	}
 
-	protected static void designateSemester(int semId) {
+	protected  void designateSemester(int semId) {
 		
 		// load Students csv
 					// for creating students
@@ -416,7 +441,7 @@ public class Utility {
 			addPrerequisiteCourse(prerequistes, courses);
 
 
-		if (mode.equals(AppMode.Initial)) {
+		if (getMode().equals(AppMode.Initial)) {
 
 			//records file has been already loaded.
 			
@@ -564,9 +589,17 @@ public class Utility {
 
 				//todo print the selection
 
-				}*/
-			
+				}
+			*/	
 			System.out.println("ToDo print assignments here..");
 			
 		}//Amruta
+
+		public static AppMode getMode() {
+			return mode;
+		}
+
+		public static void setMode(AppMode mode) {
+			Utility.mode = mode;
+		}
 }
