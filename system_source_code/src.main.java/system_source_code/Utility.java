@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -51,27 +52,26 @@ public class Utility {
 
 	protected static CourseCatalogue courseCatalogue;
 	private static AppMode mode;
-	public static HashSet<Integer> AssignedInstructors = new HashSet<Integer>();
 	
 	
-	public static ArrayList<ArrayList<Object>> selected = new ArrayList<ArrayList<Object>>();
-	public static ArrayList<ArrayList<Object>> getSelected() {
+	public static HashMap<Integer,ArrayList<Object>> selected = new HashMap<Integer,ArrayList<Object>>();
+	public static HashMap<Integer, ArrayList<Object>> getSelected() {
 		return selected;
 	}
 
-	public static void setSelected(ArrayList<ArrayList<Object>> selected) {
+	public static void setSelected(HashMap<Integer, ArrayList<Object>> selected) {
 		Utility.selected = selected;
 	}
 
-	public static ArrayList<ArrayList<Object>> getUnselected() {
+	public static HashMap<Integer, ArrayList<Object>> getUnselected() {
 		return unselected;
 	}
 
-	public static void setUnselected(ArrayList<ArrayList<Object>> unselected) {
+	public static void setUnselected(HashMap<Integer, ArrayList<Object>> unselected) {
 		Utility.unselected = unselected;
 	}
 
-	public static ArrayList<ArrayList<Object>> unselected = new ArrayList<ArrayList<Object>>();
+	public static HashMap<Integer,ArrayList<Object>> unselected = new HashMap<Integer,ArrayList<Object>>();
 
 	Utility() {
 
@@ -580,31 +580,24 @@ public class Utility {
 		
 if(selected.size() == 0 && unselected.size() == 0)
 {
-		for (Iterator<ArrayList<Object>> iterator = assignments.iterator(); iterator
-				.hasNext();) {
-			ArrayList<Object> arrayList = (ArrayList<Object>) iterator.next();
-			if (arrayList.size() == 3
-					|| (arrayList.size() > 3 && arrayList.get(3).equals(
-							unselected))) {
-				unselected.add(arrayList);
-			} else
-			{
-				selected.add(arrayList);
-				AssignedInstructors.add((Integer) arrayList.get(0));
-			}
+		for (int i = 0; i < assignments.size(); i++) {
+			unselected.put(i, assignments.get(i));
+			
 		}
 }
 		
 	  //print the selection
 		System.out.println("%------ selected -----");
-        for (int i = 0; i < selected.size(); i++) {
-			System.out.println(i +": " + (selected.get(i)).get(0)+ ", " + selected.get(i).get(1) +", "+ selected.get(i).get(2));
+        for (Entry<Integer, ArrayList<Object>> e : getSelected().entrySet()) {
+    
+			System.out.println(e.getKey() +": " + e.getValue().get(0)+ ", " + e.getValue().get(1) +", "+ e.getValue().get(2));
 		}
         
         //print unselected
         System.out.println("%------ unselected -----");
-        for (int i = 0; i < unselected.size(); i++) {
-			System.out.println(i +": " + (unselected.get(i)).get(0) +", "+ unselected.get(i).get(1) +", "+ unselected.get(i).get(2));
+        for (Entry<Integer, ArrayList<Object>> e : getUnselected().entrySet()) {
+        	
+        	System.out.println(e.getKey() +": " + e.getValue().get(0)+ ", " + e.getValue().get(1) +", "+ e.getValue().get(2));
 		}
 
 	}// Amruta

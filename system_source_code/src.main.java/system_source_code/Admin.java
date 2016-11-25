@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -83,19 +84,51 @@ public class Admin extends Person implements IPredicionTool {
 	}
 
 	public void assignInstructorForCourse(Integer index) {
+		
+		if(utility.getUnselected().get(index) == null)
+		{
+			System.out.println("index doesn't exist in unselected list");
+			return;
+		}
 
-		if (utility.AssignedInstructors.contains(Utility.getUnselected()
-				.get(index).get(0))) {
-			System.out.println("Instructor already selected to teach course");
+		if (utility.selected.size() == 5) {
+			System.out
+					.println("All instructors selected - no available hiring position");
+			return;
+		}
 
+		for (Entry<Integer, ArrayList<Object>> e : utility.getSelected()
+				.entrySet()) {
+			if (e.getValue().get(0).equals(utility.getUnselected().get(index)
+					.get(0))) {
+				System.out
+						.println("Instructor already selected to teach course");
+				return;
+			}
+		}
+
+		if (utility.getSelected().containsKey(index)) {
+			System.out.println("Already in selected list");
+		} else {
+
+			utility.getSelected()
+					.put(index, utility.getUnselected().get(index));
+			utility.getUnselected().remove(index);
+			System.out.println("instructor selected!");
+		}
+
+	}
+
+	public void deleteInstructorForCourse(Integer index) {
+		
+		if(utility.getSelected().get(index) != null)
+		{
+			utility.getUnselected().put(index,utility.getSelected().get(index));
+			utility.getSelected().remove(index);
 		}
 		else
 		{
-			
-			utility.getSelected().add(Utility.getUnselected().get(index));
-			utility.AssignedInstructors.add(Integer.parseInt((String)Utility.getUnselected().get(index).get(0)));
-			utility.getUnselected().remove(index);
-		    
+			System.out.println("Instructor already in Unselected");
 		}
 
 	}
@@ -147,21 +180,21 @@ public class Admin extends Person implements IPredicionTool {
 
 			case "add":
 				// to add instructor for a course
-				this.assignInstructorForCourse(Integer.parseInt((String) elements[1]));
+				this.assignInstructorForCourse(Integer
+						.parseInt((String) elements[1]));
 				break;
 
 			case "delete":
 				// to delete current selection
-				
+               this.deleteInstructorForCourse(Integer
+						.parseInt((String) elements[1]));
 				break;
 			case "submit":
 				// to do submit the selections till now
-				
+				//call next process semester now
 				isInvalidInput = false;
 				break;
 			default:
-			case "quit":
-				isInvalidInput = false;
 				break;
 			}
 		}
