@@ -8,7 +8,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Scanner;
 import java.util.UUID;
+
 import weka.associations.Apriori;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
@@ -17,72 +19,84 @@ import weka.filters.unsupervised.attribute.NumericToNominal;
 
 public class Admin extends Person implements IPredicionTool {
 	private Utility utility;
-	 String projRecordsFilepah = "projectedrecords.csv";
-	 private static final String EmptyString = "";
+	String projRecordsFilepah = "projectedrecords.csv";
+	private static final String EmptyString = "";
 
-	/*public static void main(String args[]) {
-		Admin admin = new Admin(1, "Kanika", "389 Canterbury Drive 48531", "123456");
-		admin.processSemester(UUID.randomUUID());
-	}*/
+	/*
+	 * public static void main(String args[]) { Admin admin = new Admin(1,
+	 * "Kanika", "389 Canterbury Drive 48531", "123456");
+	 * admin.processSemester(UUID.randomUUID()); }
+	 */
 
 	Admin(int UUID, String Name, String Address, String PhoneNumber) {
 		super(UUID, Name, Address, PhoneNumber);
 	}
-	
-	public Admin()
-	{
-		
+
+	public Admin() {
+
 	}
 
 	@Override
 	public void readPredictions() {
-		
-		 // load data
-	    Instances data = null;
-	    Instances newData = null;
-		
+
+		// load data
+		Instances data = null;
+		Instances newData = null;
+
+		try {
+			data = DataSource.read(projRecordsFilepah);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		if (data != null) {
+			data.setClassIndex(data.numAttributes() - 1);
+
+			newData = data;
+
+			NumericToNominal filter = new NumericToNominal();
+
 			try {
-				data = DataSource.read(projRecordsFilepah);
+				filter.setInputFormat(newData);
+				newData = Filter.useFilter(newData, filter);
+
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
-		
-		if(data!=null)
-		{
-		    data.setClassIndex(data.numAttributes() - 1);
-		    
-		    newData = data;
-			
-			NumericToNominal filter = new NumericToNominal();
-			
-		    try {
-				filter.setInputFormat(newData);
-				newData = Filter.useFilter(newData, filter);
-				
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} 
-	
-		    // build associator
-		    Apriori apriori = new Apriori();
-		    apriori.setClassIndex(newData.classIndex());
-		    try {
+
+			// build associator
+			Apriori apriori = new Apriori();
+			apriori.setClassIndex(newData.classIndex());
+			try {
 				apriori.buildAssociations(newData);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-	
-		    // output associator
-		    System.out.println(apriori);
+
+			// output associator
+			System.out.println(apriori);
 		}
-	
+
 	}
 
-	public void assignInstructorForCourse(Integer courseId) {
+	public void assignInstructorForCourse(Integer index) {
+
+		if (utility.AssignedInstructors.contains(Utility.getUnselected()
+				.get(index).get(0))) {
+			System.out.println("Instructor already selected to teach course");
+
+		}
+		else
+		{
+			
+			utility.getSelected().add(Utility.getUnselected().get(index));
+			utility.AssignedInstructors.add(Integer.parseInt((String)Utility.getUnselected().get(index).get(0)));
+			utility.getUnselected().remove(index);
+		    
+		}
 
 	}
 
@@ -98,90 +112,91 @@ public class Admin extends Person implements IPredicionTool {
 	public void calculateCourseCapacity(Integer courseId) {
 
 	}
-	
-	
 
 	public void processSemester(int semId) {
-		
-		System.out.println("Tmp comment: Processing semester number "+semId);
-		
+
+		System.out.println("Tmp comment: Processing semester number " + semId);
+
 		AppMode currentMode = Utility.getMode();
-		
-		utility.processRecords(currentMode,semId);
-		
-		//Step1 :Convert records.csv to projectedrecords file:Done
+
+		utility.processRecords(currentMode, semId);
+
+		// Step1 :Convert records.csv to projectedrecords file:Done
 		utility.getProjectedRecords();
-		
+
 		readPredictions();
-		
-		//Designate semester
+
+		// Designate semester
 		utility.designateSemester(semId);
-		
-		boolean isInvalidInput = false;
-		do
-		{
+
+		boolean isInvalidInput = true;
+		Scanner scin = new Scanner(System.in);
+		// System.out.print("$roster selection >");
+		String input = EmptyString;
+
+		while (isInvalidInput) {
 			System.out.print("$roster selection >");
-			 BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-			 
-			 String input = EmptyString;
-			 try {
-				input = br.readLine();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			input = scin.nextLine();
+			Object[] elements = input.split(Utility.csvSplitBy);
+			elements[0] = ((String) elements[0]).toLowerCase();
+			switch ((String) elements[0]) {
+			case "display":
+				// Step3 :Roster selection:> Display :ToDo
+				utility.display_assignments();
+				break;
+
+			case "add":
+				// to add instructor for a course
+				this.assignInstructorForCourse(Integer.parseInt((String) elements[1]));
+				break;
+
+			case "delete":
+				// to delete current selection
+				
+				break;
+			case "submit":
+				// to do submit the selections till now
+				
+				isInvalidInput = false;
+				break;
+			default:
+			case "quit":
+				isInvalidInput = false;
+				break;
 			}
-			 switch(input.toLowerCase())
-				{
-				case "display":
-				//Step3 :Roster selection:> Display :ToDo
-					utility.display_assignments();
-				 break;
-				 default:
-				case "quit":
-					isInvalidInput = true;
-					break;
-				}
 		}
-		while(!isInvalidInput);
-		
+
 		System.out.println("stopping the command loop");
-		
-		
-		
-		/*utility = new Utility();
-		utility.designateSemester(semId);
-		ArrayList<?> predictions = getDataPreditions();
-		selectInstructorAssignments(predictions);
-		// for each course
 
-		assignInstructorForCourse(1);// dummy val
-		List<Course> courses = CourseCatalogue.getCourses();
-		for (Iterator iterator = courses.iterator(); iterator.hasNext();) {
-			Course course = (Course) iterator.next();
-			calculateCourseCapacity(course.getCourseID());
-		}
-
-		ArrayList<CourseRequest> requests = new ArrayList<CourseRequest>();
-		//Amruta: Commented below line due to error
-		//requests = createRequests(Utility.parseCSV(Utility.requests));
-
-		ArrayList<Student> students = Utility.getStudents();
-
-		for (Iterator iterator = requests.iterator(); iterator.hasNext();) {
-			CourseRequest request = (CourseRequest) iterator.next();
-			for (Iterator<Student> iterator1 = students.iterator(); iterator1
-					.hasNext();) {
-				Student student = (Student) iterator1.next();
-				if (student.getUUID().equals(request.getStudenttId())) {
-					String result = student.enrollInCourse((int) request
-							.getCourseId());
-
-					Utility.processRequestStatus(result, request);
-
-				}
-			}
-
-		}*/
+		/*
+		 * utility = new Utility(); utility.designateSemester(semId);
+		 * ArrayList<?> predictions = getDataPreditions();
+		 * selectInstructorAssignments(predictions); // for each course
+		 * 
+		 * assignInstructorForCourse(1);// dummy val List<Course> courses =
+		 * CourseCatalogue.getCourses(); for (Iterator iterator =
+		 * courses.iterator(); iterator.hasNext();) { Course course = (Course)
+		 * iterator.next(); calculateCourseCapacity(course.getCourseID()); }
+		 * 
+		 * ArrayList<CourseRequest> requests = new ArrayList<CourseRequest>();
+		 * //Amruta: Commented below line due to error //requests =
+		 * createRequests(Utility.parseCSV(Utility.requests));
+		 * 
+		 * ArrayList<Student> students = Utility.getStudents();
+		 * 
+		 * for (Iterator iterator = requests.iterator(); iterator.hasNext();) {
+		 * CourseRequest request = (CourseRequest) iterator.next(); for
+		 * (Iterator<Student> iterator1 = students.iterator(); iterator1
+		 * .hasNext();) { Student student = (Student) iterator1.next(); if
+		 * (student.getUUID().equals(request.getStudenttId())) { String result =
+		 * student.enrollInCourse((int) request .getCourseId());
+		 * 
+		 * Utility.processRequestStatus(result, request);
+		 * 
+		 * } }
+		 * 
+		 * }
+		 */
 
 	}
 

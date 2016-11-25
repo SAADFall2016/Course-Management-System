@@ -16,11 +16,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-
-
 public class Utility {
 
-	public static String cvsSplitBy = ",";
+	public static String csvSplitBy = ",";
 
 	private static ArrayList<Course> courses;
 	private static ArrayList<Instructor> instructors;
@@ -37,96 +35,111 @@ public class Utility {
 	private static String assignmentsCSVFile = "assignments";
 	private static String requestscsvFile = "requests.csv";
 	private static String modecsvFile = "mode.csv";
-	
-	//Amruta
-	 private static final String COMMA_DELIMITER = ",";
-	 private static final String NEW_LINE_SEPARATOR = "\n";
-	 private static  String FILE_HEADER = "";
-	  private static String projrecordsfile = "projectedrecords.csv";
-	  private static String projectedRecordsFileName = "projectedrecords";
-	  //Amruta
-	
-	private static  String new_line_separater = "\n";
-	 private static  String file_header = "";
+	private static String isselected = "S";
+	private static String isunselected = "U";
+
+	// Amruta
+	private static final String COMMA_DELIMITER = ",";
+	private static final String NEW_LINE_SEPARATOR = "\n";
+	private static String FILE_HEADER = "";
+	private static String projrecordsfile = "projectedrecords.csv";
+	private static String projectedRecordsFileName = "projectedrecords";
+	// Amruta
+
+	private static String new_line_separater = "\n";
+	private static String file_header = "";
 
 	protected static CourseCatalogue courseCatalogue;
 	private static AppMode mode;
+	public static HashSet<Integer> AssignedInstructors = new HashSet<Integer>();
+	
+	
+	public static ArrayList<ArrayList<Object>> selected = new ArrayList<ArrayList<Object>>();
+	public static ArrayList<ArrayList<Object>> getSelected() {
+		return selected;
+	}
+
+	public static void setSelected(ArrayList<ArrayList<Object>> selected) {
+		Utility.selected = selected;
+	}
+
+	public static ArrayList<ArrayList<Object>> getUnselected() {
+		return unselected;
+	}
+
+	public static void setUnselected(ArrayList<ArrayList<Object>> unselected) {
+		Utility.unselected = unselected;
+	}
+
+	public static ArrayList<ArrayList<Object>> unselected = new ArrayList<ArrayList<Object>>();
 
 	Utility() {
-		
-		this.setMode(readMode());//Read current mode from mode.csv file.
+
+		this.setMode(readMode());// Read current mode from mode.csv file.
 
 	}
-	
-	Utility(AppMode amode)
-	{
+
+	Utility(AppMode amode) {
 		this.setMode(amode);
 	}
-	
-	//process records file as per current mode
-	
-	public  void processRecords(AppMode mode, int semId)
-	{
-		if(mode == AppMode.Resume)
-		{
-			recordscsvFile = recordsFileName + "_"+semId;
-			projrecordsfile = projectedRecordsFileName+"_"+semId;
+
+	// process records file as per current mode
+
+	public void processRecords(AppMode mode, int semId) {
+		if (mode == AppMode.Resume) {
+			recordscsvFile = recordsFileName + "_" + semId;
+			projrecordsfile = projectedRecordsFileName + "_" + semId;
 		}
-		//Pre2: Load semester independent files records.csv and requests.csv, student.csv ....:To be Done
+		// Pre2: Load semester independent files records.csv and requests.csv,
+		// student.csv ....:To be Done
 		String recordscsvFile = "records.csv";
 		// for creating records
-		
+
 		ArrayList<Record> records = createRecords(new Digest()
-								.parseCSV(recordscsvFile));
+				.parseCSV(recordscsvFile));
 		setRecords(records);
-		
+
 	}
 
-	//Amruta
-	private AppMode readMode()
-	{
-		  BufferedReader br = null;
-		  String path = modecsvFile;
-		 AppMode mode = AppMode.Initial;
-		 String line = "";
-		  
-		  try
-		  {
-			  br = new BufferedReader(new FileReader(path));
-			  while ((line = br.readLine()) != null) {
-				  
-				  switch(line.toLowerCase())
-				  {
-				  	case "initial":
-				  		mode = AppMode.Initial;
-				  		break;
-				  	case "resume":
-				  		mode = AppMode.Resume;
-				  		break;
-				  }
-			  }
-		  }
-		  catch (FileNotFoundException e) {
-		         e.printStackTrace();
-		     } catch (IOException e) {
-		         e.printStackTrace();
-		     }catch(Exception e)
-		  	{
-		     	  e.printStackTrace();
-		  	}
-		  	finally {
-		         if (br != null) {
-		             try {
-		                 br.close();
-		             } catch (IOException e) {
-		                 e.printStackTrace();
-		             }
-		         }
-		     }
-		  
-		  return mode;
+	// Amruta
+	private AppMode readMode() {
+		BufferedReader br = null;
+		String path = modecsvFile;
+		AppMode mode = AppMode.Initial;
+		String line = "";
+
+		try {
+			br = new BufferedReader(new FileReader(path));
+			while ((line = br.readLine()) != null) {
+
+				switch (line.toLowerCase()) {
+				case "initial":
+					mode = AppMode.Initial;
+					break;
+				case "resume":
+					mode = AppMode.Resume;
+					break;
+				}
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return mode;
 	}
-	
+
 	private static void addAssignments(
 			ArrayList<ArrayList<Object>> assignmentlist) {
 
@@ -184,7 +197,7 @@ public class Utility {
 				String PhoneNumber = (String) parseCSV.get(i).get(3);
 				Student student = new Student(UUID, Name, Address, PhoneNumber);
 				students.add(student);
-				
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -307,12 +320,11 @@ public class Utility {
 	public static void setRecords(ArrayList<Record> records) {
 		Utility.records = records;
 	}
-	
-	public static ArrayList<ArrayList<Object>> getAssignments()
-	{
+
+	public static ArrayList<ArrayList<Object>> getAssignments() {
 		return assignments;
 	}
-	
+
 	public static int getStudentsNotTakenAnyCourse() {
 		// for number of students who havn't taken any class
 		HashSet<Integer> studentIds = new HashSet<Integer>();
@@ -396,7 +408,7 @@ public class Utility {
 			while ((line = br.readLine()) != null) {
 
 				// use comma as separator
-				Object[] elements = line.split(cvsSplitBy);
+				Object[] elements = line.split(csvSplitBy);
 				result.add(new ArrayList<Object>(Arrays.asList(elements)));
 
 			}
@@ -418,45 +430,42 @@ public class Utility {
 		return result;
 	}
 
-	protected  void designateSemester(int semId) {
-		
+	protected void designateSemester(int semId) {
+
 		// load Students csv
-					// for creating students
+		// for creating students
 		ArrayList<Student> students = createStudents(new Digest()
 				.parseCSV(studentscsvFile));
-				setStudents(students);
+		setStudents(students);
 
 		// for creating Instructors
-			ArrayList<Instructor> instructors = createInstructor(new Digest()
-						.parseCSV(instructorscsvFile));
-			setInstructors(instructors);
-			
-			// designate upcoming semeste
-			// for creating Courses
-				ArrayList<Course> courses = createCourse(parseCSV(coursescsvFile));
-				setCourses(courses);
+		ArrayList<Instructor> instructors = createInstructor(new Digest()
+				.parseCSV(instructorscsvFile));
+		setInstructors(instructors);
+
+		// designate upcoming semeste
+		// for creating Courses
+		ArrayList<Course> courses = createCourse(parseCSV(coursescsvFile));
+		setCourses(courses);
 
 		// adding Prerequisite to Courses
-			ArrayList<ArrayList<Object>> prerequistes = parseCSV(prereqscsvFile);
-			addPrerequisiteCourse(prerequistes, courses);
-
+		ArrayList<ArrayList<Object>> prerequistes = parseCSV(prereqscsvFile);
+		addPrerequisiteCourse(prerequistes, courses);
 
 		if (getMode().equals(AppMode.Initial)) {
 
-			//records file has been already loaded.
-			
+			// records file has been already loaded.
+
 			// upload Instructor assignment file
-			assignments = parseCSV(assignmentsCSVFile+"_"+semId+".csv");
+			assignments = parseCSV(assignmentsCSVFile + "_" + semId + ".csv");
 			addAssignments(assignments);
-			
+
+		} else {
+			// todo use intermediate assignments file for semester N+1
 		}
-		else
-		{
-			//todo use intermediate assignments file for semester N+1
-		}
-		
+
 	}
-	
+
 	public static String getCourseName(Object value) {
 		for (Iterator<?> iterator = Utility.getCourses().iterator(); iterator
 				.hasNext();) {
@@ -468,138 +477,143 @@ public class Utility {
 		}
 		return null;
 	}
-	
-	public static void processRequestStatus(String message,CourseRequest courserequest)
-	{
-		
+
+	public static void processRequestStatus(String message,
+			CourseRequest courserequest) {
+
 	}
-	
-	//Amruta
-		public void getProjectedRecords() 
-		{
-			List<Integer> uniqueStudents = new ArrayList<Integer>();
-			List<Integer> uniqueCourses = new ArrayList<Integer>();
-		
-			
-			for(Record rec:records)
-			{
-				int sid = rec.getStudentID();
-				int cid = rec.getCourseID();
-				
-				if(!uniqueStudents.contains(sid))
-						{
-							uniqueStudents.add(sid);
-						}
-				if(!uniqueCourses.contains(cid))
-				{
-					uniqueCourses.add(cid);
-				}
-			
-			}
-			
-			
-			for(Integer cid:uniqueCourses)
-			{
-				FILE_HEADER = FILE_HEADER + "Course"+cid+COMMA_DELIMITER;
-			}
-			
-			FILE_HEADER = "Student,"+FILE_HEADER;
-			FILE_HEADER = FILE_HEADER.substring(0, FILE_HEADER.lastIndexOf(','));
-			
-			//System.out.println("file header "+FILE_HEADER);
-			
-			 FileWriter fileWriter = null;
 
-			 try {
-				
-				 fileWriter = new FileWriter(projrecordsfile);
-				//Add header
-				 fileWriter.append(FILE_HEADER.toString());
-				 fileWriter.append(NEW_LINE_SEPARATOR);
-					
-				 for(Integer sid:uniqueStudents)
-					{
-						fileWriter.append(String.valueOf(sid));
+	// Amruta
+	public void getProjectedRecords() {
+		List<Integer> uniqueStudents = new ArrayList<Integer>();
+		List<Integer> uniqueCourses = new ArrayList<Integer>();
+
+		for (Record rec : records) {
+			int sid = rec.getStudentID();
+			int cid = rec.getCourseID();
+
+			if (!uniqueStudents.contains(sid)) {
+				uniqueStudents.add(sid);
+			}
+			if (!uniqueCourses.contains(cid)) {
+				uniqueCourses.add(cid);
+			}
+
+		}
+
+		for (Integer cid : uniqueCourses) {
+			FILE_HEADER = FILE_HEADER + "Course" + cid + COMMA_DELIMITER;
+		}
+
+		FILE_HEADER = "Student," + FILE_HEADER;
+		FILE_HEADER = FILE_HEADER.substring(0, FILE_HEADER.lastIndexOf(','));
+
+		// System.out.println("file header "+FILE_HEADER);
+
+		FileWriter fileWriter = null;
+
+		try {
+
+			fileWriter = new FileWriter(projrecordsfile);
+			// Add header
+			fileWriter.append(FILE_HEADER.toString());
+			fileWriter.append(NEW_LINE_SEPARATOR);
+
+			for (Integer sid : uniqueStudents) {
+				fileWriter.append(String.valueOf(sid));
+				fileWriter.append(COMMA_DELIMITER);
+
+				for (int i = 0; i < uniqueCourses.size(); i++) {
+					if (studentCoursePairExists(sid, uniqueCourses.get(i)))
+						fileWriter.append("taken");
+					else
+						fileWriter.append("none");
+
+					if (i != uniqueCourses.size() - 1)
 						fileWriter.append(COMMA_DELIMITER);
-						
-						for(int i = 0; i <uniqueCourses.size();i++)
-						{
-							if(studentCoursePairExists(sid,uniqueCourses.get(i)))
-								fileWriter.append("taken");
-							else
-								fileWriter.append("none");
-							
-							if(i!=uniqueCourses.size()-1)
-								fileWriter.append(COMMA_DELIMITER);
-								
-						}
-						
-						
-						fileWriter.append(NEW_LINE_SEPARATOR);
-
-					}
-
-				 System.out.println("Tmp Msg: CSV file was created successfully !!!");
-
-				 
-			} catch (IOException e) {
-				
-				System.out.println("Error in CsvFileWriter !!!");
-				e.printStackTrace();
-			}
-			 finally {
-				          try {
-				 
-				                 fileWriter.flush();
-				 
-				                 fileWriter.close();
-				 
-				             } catch (IOException e) {
-				 
-				                 System.out.println("Error while flushing/closing fileWriter !!!");
-				 
-				                 e.printStackTrace();
-				 
-				             }
-			 }
-				              
-
-			
-		}//Amruta
-		
-		//Amruta
-		public static boolean studentCoursePairExists(int sid,int cid)
-		{
-			for(Record rec:records)
-			{
-				if(rec.getCourseID()==cid && rec.getStudentID()==sid)
-					return true;
-			}
-			return false;
-		}//Amruta
-		
-		//Amruta
-		public static void display_assignments() {
-			
-			/*ArrayList<ArrayList<Object>> assignments = getAssignments();
-			
-			for (Iterator<ArrayList<Object>> iterator = assignments.iterator(); iterator
-					.hasNext();) {
-				ArrayList<Object> arrayList = (ArrayList<Object>) iterator.next();
-
-				//todo print the selection
 
 				}
-			*/	
-			System.out.println("ToDo print assignments here..");
-			
-		}//Amruta
 
-		public static AppMode getMode() {
-			return mode;
+				fileWriter.append(NEW_LINE_SEPARATOR);
+
+			}
+
+			System.out
+					.println("Tmp Msg: CSV file was created successfully !!!");
+
+		} catch (IOException e) {
+
+			System.out.println("Error in CsvFileWriter !!!");
+			e.printStackTrace();
+		} finally {
+			try {
+
+				fileWriter.flush();
+
+				fileWriter.close();
+
+			} catch (IOException e) {
+
+				System.out
+						.println("Error while flushing/closing fileWriter !!!");
+
+				e.printStackTrace();
+
+			}
 		}
 
-		public static void setMode(AppMode mode) {
-			Utility.mode = mode;
+	}// Amruta
+
+	// Amruta
+	public static boolean studentCoursePairExists(int sid, int cid) {
+		for (Record rec : records) {
+			if (rec.getCourseID() == cid && rec.getStudentID() == sid)
+				return true;
 		}
+		return false;
+	}// Amruta
+
+	// Amruta
+	public static void display_assignments() {
+
+		ArrayList<ArrayList<Object>> assignments = getAssignments();
+		
+if(selected.size() == 0 && unselected.size() == 0)
+{
+		for (Iterator<ArrayList<Object>> iterator = assignments.iterator(); iterator
+				.hasNext();) {
+			ArrayList<Object> arrayList = (ArrayList<Object>) iterator.next();
+			if (arrayList.size() == 3
+					|| (arrayList.size() > 3 && arrayList.get(3).equals(
+							unselected))) {
+				unselected.add(arrayList);
+			} else
+			{
+				selected.add(arrayList);
+				AssignedInstructors.add((Integer) arrayList.get(0));
+			}
+		}
+}
+		
+	  //print the selection
+		System.out.println("%------ selected -----");
+        for (int i = 0; i < selected.size(); i++) {
+			System.out.println(i +": " + (selected.get(i)).get(0)+ ", " + selected.get(i).get(1) +", "+ selected.get(i).get(2));
+		}
+        
+        //print unselected
+        System.out.println("%------ unselected -----");
+        for (int i = 0; i < unselected.size(); i++) {
+			System.out.println(i +": " + (unselected.get(i)).get(0) +", "+ unselected.get(i).get(1) +", "+ unselected.get(i).get(2));
+		}
+
+	}// Amruta
+
+	public static AppMode getMode() {
+		return mode;
+	}
+
+	public static void setMode(AppMode mode) {
+		Utility.mode = mode;
+	}
 }

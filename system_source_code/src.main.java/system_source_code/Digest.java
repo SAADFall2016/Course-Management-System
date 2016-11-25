@@ -306,6 +306,15 @@ public class Digest {
 
 	public static void main(String args[]) throws URISyntaxException {
 		
+		/*
+		 * execute below lines in debug mode to make it run
+		 * args = new String[1];
+           args[0] = "initial";
+		 */
+		
+		args = new String[1];
+		args[0] = "initial";
+		
 		String strMode = args[0];
 		switch(strMode.toLowerCase())
 		{
@@ -333,9 +342,7 @@ public class Digest {
 		for(;currentSem<=noOfSems;currentSem++)
 		{
 			admin.processSemester(currentSem);
-		}
-		
-		
+		}		
 	}
 	
 	public static int getCurrentResumedSemNumber()

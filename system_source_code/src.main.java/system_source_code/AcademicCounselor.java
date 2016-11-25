@@ -8,10 +8,7 @@ public class AcademicCounselor extends Person {
 	}
 
 	public void enrollStudentInCourse(int studentId) {
-		
-		
-		
-		String tmp ="";
+
 	}
 
 	public void counselStudents() {
