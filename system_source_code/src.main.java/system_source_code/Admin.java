@@ -192,6 +192,8 @@ public class Admin extends Person implements IPredicionTool {
 			case "submit":
 				// to do submit the selections till now
 				//call next process semester now
+				;
+				utility.addAssignments(utility.getSelected().values());
 				isInvalidInput = false;
 				break;
 			default:
@@ -237,6 +239,7 @@ public class Admin extends Person implements IPredicionTool {
 		 */
 
 	}
+
 
 
 	public static void check_request(CourseRequest request) {

@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -146,8 +147,8 @@ public class Utility {
 		return mode;
 	}
 
-	private static void addAssignments(
-			ArrayList<ArrayList<Object>> assignmentlist) {
+	public static void addAssignments(
+			Collection<ArrayList<Object>> assignmentlist) {
 
 		for (Iterator<ArrayList<Object>> iterator = assignmentlist.iterator(); iterator
 				.hasNext();) {
