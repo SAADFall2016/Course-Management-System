@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -26,6 +27,8 @@ public class Utility {
 	private static ArrayList<Student> students;
 	private static ArrayList<Record> records;
 	private static ArrayList<ArrayList<Object>> assignments;
+	private HashMap<Integer, Integer> requestsHM;
+
 
 	private static String recordsFileName = "records";
 	private static String recordscsvFile = "records.csv";
@@ -33,7 +36,8 @@ public class Utility {
 	private static String instructorscsvFile = "instructors.csv";
 	private static String coursescsvFile = "courses.csv";
 	private static String prereqscsvFile = "prereqs.csv";
-	private static String assignmentsCSVFile = "assignments";
+	private static String assignmentsFileName = "assignments";
+	private static String requestsFileName = "requests";
 	private static String requestscsvFile = "requests.csv";
 	private static String modecsvFile = "mode.csv";
 	private static String isselected = "S";
@@ -52,6 +56,8 @@ public class Utility {
 
 	protected static CourseCatalogue courseCatalogue;
 	private static AppMode mode;
+	
+	public static ArrayList<String> displayrequst = new ArrayList<String>();
 	
 	
 	public static HashMap<Integer,ArrayList<Object>> selected = new HashMap<Integer,ArrayList<Object>>();
@@ -458,7 +464,7 @@ public class Utility {
 			// records file has been already loaded.
 
 			// upload Instructor assignment file
-			assignments = parseCSV(assignmentsCSVFile + "_" + semId + ".csv");
+			assignments = parseCSV(assignmentsFileName + "_" + semId + ".csv");
 			addAssignments(assignments);
 			
 			createGrantedRecords(new ArrayList<CourseRequest> ());
@@ -736,6 +742,122 @@ public class Utility {
 
 		}
 		//Girish
+		
+		//Amruta
+		public void uploadRequests(int semId)
+		{
+			setRequestsHM(createRequests(parseCSV(Utility.requestsFileName+"_"+semId+".csv")));
+		}
+		
+		//section copied methods from Digest class
+		public static void check_request(Integer studentId, Integer courseId) {
+
+			ArrayList<Student> students = getStudents();
+			for (Iterator<Student> iterator = students.iterator(); iterator
+					.hasNext();) {
+				Student student = (Student) iterator.next();
+				if (student.getUUID().equals(studentId)) {
+					String result = student.enrollInCourse(courseId);
+					System.out.println(result);
+					if (result.equals(Student.validRequest)) {
+						String res = student.getUUID().toString() + ',' + student.getName()
+								+ ',' + courseId + ',' + getCourseName(courseId);
+						displayrequst.add(res);
+					}
+
+				}
+
+			}
+
+		}
+		//section copied methods from Digest class
+		public static void displayRequestdigest(HashMap<Integer, Integer> request,
+				ArrayList<Student> students) {
+			int validrequest = 0;
+			int missingpre = 0;
+			int alreadytaken = 0;
+			int noseat = 0;
+			System.out.println("Processed Requests");
+			
+			for (Entry<?, ?> req : request.entrySet()) {
+				for (Iterator<Student> iterator = students.iterator(); iterator
+						.hasNext();) {
+					Student student = (Student) iterator.next();
+					if (student.getUUID().equals(req.getKey())) {
+						String result = student
+								.enrollInCourse((int) req.getValue());
+						if (result.equals(Student.validRequest)) 
+						{
+							validrequest = validrequest + 1;
+							String res = student.getUUID().toString() + ','
+									+ student.getName() + ',' + req.getValue() + ','
+									+ getCourseName(req.getValue());
+							
+							displayrequst.add(res);
+							System.out.println("request ("+student.getUUID().toString()+", "+(int) req.getValue()+"): valid");
+							
+						}
+						if (result.equals(Student.alreadyTakenCourse))
+						{
+							System.out.println("request ("+student.getUUID().toString()+", "
+						+(int) req.getValue()+"): student has already taken the course with a grade of C or higher");
+							alreadytaken = alreadytaken + 1;
+						}
+						if (result.equals(Student.missingPrerequisite))
+						{
+							missingpre = missingpre + 1;
+							System.out.println("request ("+student.getUUID().toString()+", "+(int) req.getValue()
+							+"): student is missing one or more prerequisites");
+						}
+						if (result.equals(Student.noSeatsAvailable))
+						{
+							noseat = noseat + 1;
+							System.out.println("request ("+student.getUUID().toString()+", "+(int) req.getValue()
+							+"): no remaining seats at this time: (re-)added to waitlist");
+						}
+
+					}
+				}
+			}
+			
+			int totalReqInSem = validrequest+ alreadytaken + missingpre + noseat;
+			
+			System.out.println("");
+			System.out.println("Semester Statistics");
+			System.out.println("Examined: "+ totalReqInSem +" Granted: "+validrequest+ " Failed: "
+			+ (alreadytaken + missingpre)+ " Listed: "+noseat);
+			System.out.println("Total Statistics");
+			
+			//TODO : Need to change the total statistic for all sems calculations
+			System.out.println("Examined: "+ totalReqInSem +" Granted: "+validrequest+ " Failed: "
+					+ (alreadytaken + missingpre)+ " Listed: "+noseat);
+			
+
+		}
+		
+		//section copied methods from Digest class
+		public  HashMap<Integer, Integer> createRequests(
+				ArrayList<ArrayList<Object>> requests) {
+			HashMap<Integer, Integer> hm = new LinkedHashMap<>();
+			for (Iterator<ArrayList<Object>> iterator = requests.iterator(); iterator
+					.hasNext();) {
+				ArrayList<Object> arrayList = (ArrayList<Object>) iterator.next();
+				hm.put(Integer.parseInt((String) arrayList.get(0)),
+						Integer.parseInt((String) arrayList.get(1)));
+
+			}
+			return hm;
+
+		}
+
+		public HashMap<Integer, Integer> getRequestsHM() {
+			return requestsHM;
+		}
+
+		public void setRequestsHM(HashMap<Integer, Integer> requestsHM) {
+			this.requestsHM = requestsHM;
+		}
+
 		
 		
 }

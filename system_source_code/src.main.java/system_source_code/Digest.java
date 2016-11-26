@@ -41,7 +41,8 @@ public class Digest {
 		course.setAvailableCapacity(course.getAvailableCapacity() + seats);
 	}
 
-	public static void check_request(Integer studentId, Integer courseId) {
+	//Moving to Utility
+	  /*public static void check_request(Integer studentId, Integer courseId) {
 
 		ArrayList<Student> students = util.getStudents();
 		for (Iterator<Student> iterator = students.iterator(); iterator
@@ -60,7 +61,7 @@ public class Digest {
 
 		}
 
-	}
+	}*/
 
 	public static void display_records() {
 		ArrayList<Record> records = util.getRecords();
@@ -95,7 +96,8 @@ public class Digest {
 		}
 	}
 
-	public static void displayRequestdigest(HashMap<Integer, Integer> request,
+	/*Moving to Utility class
+	 * public static void displayRequestdigest(HashMap<Integer, Integer> request,
 			ArrayList<Student> students) {
 		int validrequest = 0;
 		int missingpre = 0;
@@ -130,7 +132,7 @@ public class Digest {
 		System.out.println(missingpre);
 		System.out.println(alreadytaken);
 		System.out.println(noseat);
-	}
+	}*/
 
 	private static String getCourseName(Object value) {
 		for (Iterator<?> iterator = util.getCourses().iterator(); iterator

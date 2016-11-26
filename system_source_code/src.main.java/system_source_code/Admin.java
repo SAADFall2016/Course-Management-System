@@ -199,8 +199,13 @@ public class Admin extends Person implements IPredicionTool {
 			}
 		}
 
-		System.out.println("stopping the command loop");
-
+		//Step 7:Upload the student requests file.
+		utility.uploadRequests(semId);
+		
+		//Print statistics
+		utility.displayRequestdigest(utility.getRequestsHM(), utility.getStudents());
+		
+		
 		/*
 		 * utility = new Utility(); utility.designateSemester(semId);
 		 * ArrayList<?> predictions = getDataPreditions();
@@ -233,20 +238,6 @@ public class Admin extends Person implements IPredicionTool {
 
 	}
 
-	private static ArrayList<CourseRequest> createRequests(
-			ArrayList<ArrayList<Object>> requests) {
-		ArrayList<CourseRequest> request = new ArrayList<CourseRequest>();
-		for (Iterator<ArrayList<Object>> iterator = requests.iterator(); iterator
-				.hasNext();) {
-			ArrayList<Object> arrayList = (ArrayList<Object>) iterator.next();
-			CourseRequest courserequest = new CourseRequest();
-			courserequest.setStudenttId((int) arrayList.get(0));
-			courserequest.setCourseId((int) arrayList.get(0));
-
-		}
-		return request;
-
-	}
 
 	public static void check_request(CourseRequest request) {
 
