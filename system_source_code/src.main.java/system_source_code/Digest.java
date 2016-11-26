@@ -152,6 +152,7 @@ public class Digest {
            args[0] = "initial";
 		 */
 		
+		
 		args = new String[1];
 		args[0] = "initial";
 		
@@ -171,6 +172,8 @@ public class Digest {
 		Admin admin = new Admin();
 		admin.setUtility(util);//set same utility instance
 		
+	
+		
 		//Check how many semesters we are dealing with and process each semesters.
 		int noOfSems = getNoOfSemesters();
 		int currentSem = 1;
@@ -182,7 +185,9 @@ public class Digest {
 		for(;currentSem<=noOfSems;currentSem++)
 		{
 			admin.processSemester(currentSem);
-		}		
+		}	
+		
+		
 	}
 	
 	public static int getCurrentResumedSemNumber()
