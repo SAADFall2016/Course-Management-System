@@ -28,6 +28,10 @@ public class Utility {
 	private static ArrayList<Student> students;
 	private static ArrayList<Record> records;
 	private static ArrayList<ArrayList<Object>> assignments;
+	public static void setAssignments(ArrayList<ArrayList<Object>> assignments) {
+		Utility.assignments = assignments;
+	}
+
 	private HashMap<Integer, Integer> requestsHM;
 
 
@@ -466,7 +470,8 @@ public class Utility {
 
 			// upload Instructor assignment file
 			assignments = parseCSV(assignmentsFileName + "_" + semId + ".csv");
-			addAssignments(assignments);
+			setAssignments(assignments);
+
 			
 			createGrantedRecords(new ArrayList<CourseRequest> ());
 
