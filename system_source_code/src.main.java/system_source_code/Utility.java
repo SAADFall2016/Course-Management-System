@@ -30,17 +30,26 @@ public class Utility {
 	private static ArrayList<CourseRequest> waitListedRequests;
 	private static ArrayList<CourseRequest> grantedRequests;
 	private static ArrayList<ArrayList<Object>> assignments;
+
 	public static void setAssignments(ArrayList<ArrayList<Object>> assignments) {
 		Utility.assignments = assignments;
 	}
 
-	private HashMap<Integer, Integer> requestsHM;
+	// private HashMap<Integer, Integer> requestsHM;
+	private static ArrayList<CourseRequest> CourseRequests;
 
+	public static ArrayList<CourseRequest> getCourseRequests() {
+		return CourseRequests;
+	}
+
+	public static void setCourseRequests(ArrayList<CourseRequest> courseRequests) {
+		CourseRequests = courseRequests;
+	}
 
 	private static String recordsFileName = "records";
 	private static String recordscsvFile = "records.csv";
-	private static String waitListedFileName ="waitlist";
-	private static String waitListedFile ="waitlist.csv";
+	private static String waitListedFileName = "waitlist";
+	private static String waitListedFile = "waitlist.csv";
 	private static String studentscsvFile = "students.csv";
 	private static String instructorscsvFile = "instructors.csv";
 	private static String coursescsvFile = "courses.csv";
@@ -57,27 +66,28 @@ public class Utility {
 	private static final String NEW_LINE_SEPARATOR = "\n";
 	private static String FILE_HEADER = "";
 	private static String baseFolder = "src.main.java//";
-	private static String projrecordsfile = baseFolder+"projectedrecords.csv";
-	private static String projectedRecordsFileName = baseFolder+"projectedrecords";
+	private static String projrecordsfile = baseFolder + "projectedrecords.csv";
+	private static String projectedRecordsFileName = baseFolder
+			+ "projectedrecords";
 	private static int currentSemId;
-	
+
 	// Amruta
-	
-	//Girish
-	private static String grantedRecordsFile ="grantedrecords.csv";
-	private static String grantedRecordsFileName ="grantedrecords";
-	//Girish
+
+	// Girish
+	private static String grantedRecordsFile = "grantedrecords.csv";
+	private static String grantedRecordsFileName = "grantedrecords";
+	// Girish
 
 	private static String new_line_separater = "\n";
 	private static String file_header = "";
 
 	protected static CourseCatalogue courseCatalogue;
 	private static AppMode mode;
-	
+
 	public static ArrayList<String> displayrequst = new ArrayList<String>();
-	
-	
-	public static HashMap<Integer,ArrayList<Object>> selected = new HashMap<Integer,ArrayList<Object>>();
+
+	public static HashMap<Integer, ArrayList<Object>> selected = new HashMap<Integer, ArrayList<Object>>();
+
 	public static HashMap<Integer, ArrayList<Object>> getSelected() {
 		return selected;
 	}
@@ -90,11 +100,12 @@ public class Utility {
 		return unselected;
 	}
 
-	public static void setUnselected(HashMap<Integer, ArrayList<Object>> unselected) {
+	public static void setUnselected(
+			HashMap<Integer, ArrayList<Object>> unselected) {
 		Utility.unselected = unselected;
 	}
 
-	public static HashMap<Integer,ArrayList<Object>> unselected = new HashMap<Integer,ArrayList<Object>>();
+	public static HashMap<Integer, ArrayList<Object>> unselected = new HashMap<Integer, ArrayList<Object>>();
 
 	Utility() {
 
@@ -108,31 +119,26 @@ public class Utility {
 
 	// process records file as per current mode
 
-	public void processRecords(AppMode mode, int semId) 
-	{
+	public void processRecords(AppMode mode, int semId) {
 		String recordscsvFile = "";
-		
-		
-		if(semId == 1)
-			recordscsvFile = "records.csv";
-		
-		else
-		{
-			recordscsvFile = recordsFileName + "_" + (semId-1)+".csv";
-			setProjrecordsfile(projectedRecordsFileName + "_" +(semId-1)+".csv");
-		}
-	
-		try
-		{
 
-		ArrayList<Record> records = createRecords(new Digest()
-				.parseCSV(recordscsvFile));
-		System.out.println("total records.."+records.size());
-		setRecords(records);
+		if (semId == 1)
+			recordscsvFile = "records.csv";
+
+		else {
+			recordscsvFile = recordsFileName + "_" + (semId - 1) + ".csv";
+			setProjrecordsfile(projectedRecordsFileName + "_" + (semId - 1)
+					+ ".csv");
 		}
-		catch(Exception ex)
-		{
-			System.out.println("msg "+ex.getMessage());
+
+		try {
+
+			ArrayList<Record> records = createRecords(new Digest()
+					.parseCSV(recordscsvFile));
+			System.out.println("total records.." + records.size());
+			setRecords(records);
+		} catch (Exception ex) {
+			System.out.println("msg " + ex.getMessage());
 		}
 
 	}
@@ -407,7 +413,8 @@ public class Utility {
 		// number of courses which aren't taken by any student
 
 		HashSet<Integer> courseIds = new HashSet<Integer>();
-		for (Iterator<Course> iterator = getCourses().iterator(); iterator.hasNext();) {
+		for (Iterator<Course> iterator = getCourses().iterator(); iterator
+				.hasNext();) {
 			courseIds.add(((Course) iterator.next()).getCourseID());
 		}
 		for (Iterator<Record> iterator = records.iterator(); iterator.hasNext();) {
@@ -482,7 +489,7 @@ public class Utility {
 		// designate upcoming semeste
 		// for creating Courses
 		ArrayList<Course> courses = createCourse(parseCSV(coursescsvFile));
-		CourseCatalogue.setCourses(courses);//set the catalogue
+		CourseCatalogue.setCourses(courses);// set the catalogue
 		setCourses(courses);
 
 		// adding Prerequisite to Courses
@@ -496,7 +503,6 @@ public class Utility {
 			// upload Instructor assignment file
 			assignments = parseCSV(assignmentsFileName + "_" + semId + ".csv");
 			setAssignments(assignments);
-
 
 		} else {
 			// todo use intermediate assignments file for semester N+1
@@ -522,22 +528,21 @@ public class Utility {
 	}
 
 	// Amruta
-	
-	public static void createWaitListFile(ArrayList<CourseRequest> waitedRequests)
-	{
+
+	public static void createWaitListFile(
+			ArrayList<CourseRequest> waitedRequests) {
 		FileWriter fileWriter = null;
 		try {
 
-			fileWriter = new FileWriter(waitListedFileName+"_"+getCurrentSemId()+".csv");
-			for(CourseRequest request:waitedRequests)
-			{
+			fileWriter = new FileWriter(baseFolder + waitListedFileName + "_"
+					+ getCurrentSemId() + ".csv");
+			for (CourseRequest request : waitedRequests) {
 				fileWriter.append(String.valueOf(request.getStudenttId()));
 				fileWriter.append(COMMA_DELIMITER);
 				fileWriter.append(String.valueOf(request.getCourseId()));
 				fileWriter.append(NEW_LINE_SEPARATOR);
 			}
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 
 			System.out.println("Error in CsvFileWriter !!!");
 			e.printStackTrace();
@@ -558,18 +563,18 @@ public class Utility {
 			}
 		}
 		System.out
-		.println("Tmp Msg: Waitlisted CSV file was created successfully !!!");
-		
+				.println("Tmp Msg: Waitlisted CSV file was created successfully !!!");
+
 	}
-	
+
 	public void createProjRecordsFile() {
-		
+
 		List<Integer> uniqueStudents = new ArrayList<Integer>();
 		List<Integer> uniqueCourses = new ArrayList<Integer>();
 
-		System.out.println("tmp msg records count "+records.size());
-		FILE_HEADER ="";
-		
+		System.out.println("tmp msg records count " + records.size());
+		FILE_HEADER = "";
+
 		for (Record rec : records) {
 			int sid = rec.getStudentID();
 			int cid = rec.getCourseID();
@@ -596,7 +601,7 @@ public class Utility {
 
 		try {
 
-			System.out.println("tmp msg projfilepath "+getProjrecordsfile());
+			System.out.println("tmp msg projfilepath " + getProjrecordsfile());
 			fileWriter = new FileWriter(getProjrecordsfile());
 			// Add header
 			fileWriter.append(FILE_HEADER.toString());
@@ -660,27 +665,28 @@ public class Utility {
 	public static void display_assignments() {
 
 		ArrayList<ArrayList<Object>> assignments = getAssignments();
-		
-		if(selected.size() == 0 && unselected.size() == 0)
-		{
-				for (int i = 0; i < assignments.size(); i++) {
-					unselected.put(i, assignments.get(i));
-					
-				}
+
+		if (selected.size() == 0 && unselected.size() == 0) {
+			for (int i = 0; i < assignments.size(); i++) {
+				unselected.put(i, assignments.get(i));
+
+			}
 		}
-		
-	  //print the selection
+
+		// print the selection
 		System.out.println("%------ selected -----");
-        for (Entry<Integer, ArrayList<Object>> e : getSelected().entrySet()) {
-    
-			System.out.println(e.getKey() +": " + e.getValue().get(0)+ ", " + e.getValue().get(1) +", "+ e.getValue().get(2));
+		for (Entry<Integer, ArrayList<Object>> e : getSelected().entrySet()) {
+
+			System.out.println(e.getKey() + ": " + e.getValue().get(0) + ", "
+					+ e.getValue().get(1) + ", " + e.getValue().get(2));
 		}
-        
-        //print unselected
-        System.out.println("%------ unselected -----");
-        for (Entry<Integer, ArrayList<Object>> e : getUnselected().entrySet()) {
-        	
-        	System.out.println(e.getKey() +": " + e.getValue().get(0)+ ", " + e.getValue().get(1) +", "+ e.getValue().get(2));
+
+		// print unselected
+		System.out.println("%------ unselected -----");
+		for (Entry<Integer, ArrayList<Object>> e : getUnselected().entrySet()) {
+
+			System.out.println(e.getKey() + ": " + e.getValue().get(0) + ", "
+					+ e.getValue().get(1) + ", " + e.getValue().get(2));
 		}
 
 	}// Amruta
@@ -692,349 +698,356 @@ public class Utility {
 	public static void setMode(AppMode mode) {
 		Utility.mode = mode;
 	}
-	
-	//Girish
-			private static Grade getrandomGrades()
-			{
-				double gr = Math.random();
-			
-				double[] probabilities = {0.10, 0.30, 0.40,0.10,0.10};
-				
-				Grade[] grades = Grade.values();
-				
-				double cdf = 0.0;
-				
-				for(int i=0; i < grades.length; i++)
-				{
-					cdf += probabilities[i];
-					if(gr < cdf)
-						return grades[i];
-				}
-				return grades[grades.length - 1];			
-				
+
+	// Girish
+	private static Grade getrandomGrades() {
+		double gr = Math.random();
+
+		double[] probabilities = { 0.10, 0.30, 0.40, 0.10, 0.10 };
+
+		Grade[] grades = Grade.values();
+
+		double cdf = 0.0;
+
+		for (int i = 0; i < grades.length; i++) {
+			cdf += probabilities[i];
+			if (gr < cdf)
+				return grades[i];
+		}
+		return grades[grades.length - 1];
+
+	}
+
+	public static ArrayList<Record> createGrantedRecords(
+			ArrayList<CourseRequest> cRequests) {
+
+		/*
+		 * cRequests = new ArrayList<CourseRequest>();
+		 * 
+		 * CourseRequest cr1 = new CourseRequest(); cr1.setCourseId(2);
+		 * //cr1.setinstructorid(10); cr1.setStudenttId(20);
+		 * 
+		 * CourseRequest cr2 = new CourseRequest(); cr2.setCourseId(4);
+		 * //cr2.setinstructorid(11); cr2.setStudenttId(21);
+		 * 
+		 * CourseRequest cr3 = new CourseRequest(); cr3.setCourseId(6);
+		 * //cr3.setinstructorid(12); cr3.setStudenttId(22);
+		 * 
+		 * CourseRequest cr4 = new CourseRequest(); cr4.setCourseId(8);
+		 * //cr4.setinstructorid(13); cr4.setStudenttId(23);
+		 * 
+		 * CourseRequest cr5 = new CourseRequest(); cr5.setCourseId(10);
+		 * //cr5.setinstructorid(10); cr5.setStudenttId(24);
+		 * 
+		 * CourseRequest cr6 = new CourseRequest(); cr6.setCourseId(13);
+		 * //cr6.setinstructorid(14); cr6.setStudenttId(25);
+		 * 
+		 * CourseRequest cr7 = new CourseRequest(); cr7.setCourseId(16);
+		 * //cr7.setinstructorid(15); cr7.setStudenttId(26);
+		 * 
+		 * CourseRequest cr8 = new CourseRequest(); cr8.setCourseId(17);
+		 * //cr8.setinstructorid(16); cr8.setStudenttId(27);
+		 * 
+		 * CourseRequest cr9 = new CourseRequest(); cr9.setCourseId(19);
+		 * //cr9.setinstructorid(17); cr9.setStudenttId(28);
+		 * 
+		 * CourseRequest cr10 = new CourseRequest(); cr10.setCourseId(20);
+		 * //cr10.setinstructorid(18); cr10.setStudenttId(29);
+		 * 
+		 * cRequests.add(cr1); cRequests.add(cr2); cRequests.add(cr3);
+		 * cRequests.add(cr4); cRequests.add(cr5); cRequests.add(cr6);
+		 * cRequests.add(cr6); cRequests.add(cr8); cRequests.add(cr9);
+		 * cRequests.add(cr10);
+		 */
+
+		ArrayList<Record> cGrantedRecords = new ArrayList<Record>();
+
+		for (CourseRequest cR : cRequests) {
+			List<Course> courses = CourseCatalogue.getCourses();
+
+			int cid = cR.getCourseId();
+			Course c = CourseCatalogue.getCourse(cid);
+
+			HashMap<Person, Integer> instructorsMap = c
+					.getInstructors_capacity();
+			Instructor ins = null;
+			Record rec = null;
+
+			if (instructorsMap != null && !instructorsMap.isEmpty()) {
+				Set<Person> pset = instructorsMap.keySet();
+				Object[] persons = pset.toArray();
+				ins = (Instructor) (persons[0]);
+
 			}
-		
-			public static ArrayList<Record> createGrantedRecords(ArrayList<CourseRequest> cRequests)
-			{
-				
-				
-				
-				/*cRequests = new ArrayList<CourseRequest>();
-			
-			 	CourseRequest cr1 = new CourseRequest();
-				cr1.setCourseId(2);
-				//cr1.setinstructorid(10);
-				cr1.setStudenttId(20);
-				
-				CourseRequest cr2 = new CourseRequest();
-				cr2.setCourseId(4);
-				//cr2.setinstructorid(11);
-				cr2.setStudenttId(21);
-				
-				CourseRequest cr3 = new CourseRequest();
-				cr3.setCourseId(6);
-				//cr3.setinstructorid(12);
-				cr3.setStudenttId(22);
-				
-				CourseRequest cr4 = new CourseRequest();
-				cr4.setCourseId(8);
-				//cr4.setinstructorid(13);
-				cr4.setStudenttId(23);
-				
-				CourseRequest cr5 = new CourseRequest();
-				cr5.setCourseId(10);
-				//cr5.setinstructorid(10);
-				cr5.setStudenttId(24);
-				
-				CourseRequest cr6 = new CourseRequest();
-				cr6.setCourseId(13);
-				//cr6.setinstructorid(14);
-				cr6.setStudenttId(25);
-				
-				CourseRequest cr7 = new CourseRequest();
-				cr7.setCourseId(16);
-				//cr7.setinstructorid(15);
-				cr7.setStudenttId(26);
-				
-				CourseRequest cr8 = new CourseRequest();
-				cr8.setCourseId(17);
-				//cr8.setinstructorid(16);
-				cr8.setStudenttId(27);
-				
-				CourseRequest cr9 = new CourseRequest();
-				cr9.setCourseId(19);
-				//cr9.setinstructorid(17);
-				cr9.setStudenttId(28);
-				
-				CourseRequest cr10 = new CourseRequest();
-				cr10.setCourseId(20);
-				//cr10.setinstructorid(18);
-				cr10.setStudenttId(29);
-				
-				cRequests.add(cr1);
-				cRequests.add(cr2);
-				cRequests.add(cr3);
-				cRequests.add(cr4);
-				cRequests.add(cr5);
-				cRequests.add(cr6);
-				cRequests.add(cr6);
-				cRequests.add(cr8);
-				cRequests.add(cr9);
-				cRequests.add(cr10);*/
-				
-			
-				
-				ArrayList<Record> cGrantedRecords = new ArrayList<Record>();
-				
-				for(CourseRequest cR : cRequests)
-				{
-					List<Course> courses = CourseCatalogue.getCourses();
-				
-					int cid = cR.getCourseId();
-					Course c = CourseCatalogue.getCourse(cid);
-					
-					HashMap<Person,Integer> instructorsMap = c.getInstructors_capacity();
-					Instructor ins = null;
-					Record rec = null;
-					
-					if(instructorsMap!=null && !instructorsMap.isEmpty())
-					{
-						Set<Person> pset = instructorsMap.keySet();
-						Object[] persons = pset.toArray();
-					    ins = (Instructor)(persons[0]);
-						
-					}
-					
-					if(ins!=null)
-					{
-						rec = new Record(cR.getStudenttId(),cR.getCourseId(),ins.getUUID(),"Random Comment",getrandomGrades());
-						
-						if(!cGrantedRecords.contains(rec))
-							cGrantedRecords.add(rec);
-					}
-				}
-				
-				if(cGrantedRecords != null && !cGrantedRecords.isEmpty() && records !=null)
-				{
-					for(Record r : cGrantedRecords)
-					{
-						if(!records.contains(r))
-							records.add(r);
-					}	
-				}
-				
-				FileWriter fileWriter = null;
-				try
-				{
-					String tmpRecords = "";
-					tmpRecords = baseFolder+recordsFileName;
-					fileWriter = new FileWriter(tmpRecords+"_"+getCurrentSemId()+".csv");
-					for (Record r : records) {
-						fileWriter.append(String.valueOf(r.getStudentID()));
-						fileWriter.append(COMMA_DELIMITER);
-						
-						fileWriter.append(String.valueOf(r.getCourseID()));
-						fileWriter.append(COMMA_DELIMITER);
-						
-						fileWriter.append(String.valueOf(r.getInstructorID()));
-						fileWriter.append(COMMA_DELIMITER);
-						
-						fileWriter.append(String.valueOf(r.getInstructorComment()));
-						fileWriter.append(COMMA_DELIMITER);
-						
-						fileWriter.append(String.valueOf(r.getGrade()));
-											
-						fileWriter.append(NEW_LINE_SEPARATOR);
-					}
-					
-					System.out
+
+			if (ins != null) {
+				rec = new Record(cR.getStudenttId(), cR.getCourseId(),
+						ins.getUUID(), "Random Comment", getrandomGrades());
+
+				if (!cGrantedRecords.contains(rec))
+					cGrantedRecords.add(rec);
+			}
+		}
+
+		if (cGrantedRecords != null && !cGrantedRecords.isEmpty()
+				&& records != null) {
+			for (Record r : cGrantedRecords) {
+				if (!records.contains(r))
+					records.add(r);
+			}
+		}
+
+		FileWriter fileWriter = null;
+		try {
+			String tmpRecords = "";
+			tmpRecords = baseFolder + recordsFileName;
+			fileWriter = new FileWriter(tmpRecords + "_" + getCurrentSemId()
+					+ ".csv");
+			for (Record r : records) {
+				fileWriter.append(String.valueOf(r.getStudentID()));
+				fileWriter.append(COMMA_DELIMITER);
+
+				fileWriter.append(String.valueOf(r.getCourseID()));
+				fileWriter.append(COMMA_DELIMITER);
+
+				fileWriter.append(String.valueOf(r.getInstructorID()));
+				fileWriter.append(COMMA_DELIMITER);
+
+				fileWriter.append(String.valueOf(r.getInstructorComment()));
+				fileWriter.append(COMMA_DELIMITER);
+
+				fileWriter.append(String.valueOf(r.getGrade()));
+
+				fileWriter.append(NEW_LINE_SEPARATOR);
+			}
+
+			System.out
 					.println("Tmp Msg: GrantedRecords CSV file was created successfully !!!");
-				}			
-				catch (IOException e) 
-				{
+		} catch (IOException e) {
 
-						System.out.println("Error in CsvFileWriter !!!");
-						e.printStackTrace();
-					
-				}
-				finally 
-				{
-						try {
+			System.out.println("Error in CsvFileWriter !!!");
+			e.printStackTrace();
 
-							fileWriter.flush();
+		} finally {
+			try {
 
-							fileWriter.close();
+				fileWriter.flush();
 
-						} catch (IOException e) {
+				fileWriter.close();
 
-							System.out
-									.println("Error while flushing/closing fileWriter !!!");
+			} catch (IOException e) {
 
-							e.printStackTrace();
+				System.out
+						.println("Error while flushing/closing fileWriter !!!");
 
-						}
-					}
-				
-				return cGrantedRecords;
-				
+				e.printStackTrace();
 
 			}
-		//Girish
-		
-		//Amruta
-		public void uploadRequests(int semId)
-		{
-			setRequestsHM(createRequests(parseCSV(Utility.requestsFileName+"_"+semId+".csv")));
 		}
-		
-		//section copied methods from Digest class
-		public static void check_request(Integer studentId, Integer courseId) {
 
-			ArrayList<Student> students = getStudents();
-			for (Iterator<Student> iterator = students.iterator(); iterator
-					.hasNext();) {
-				Student student = (Student) iterator.next();
-				if (student.getUUID().equals(studentId)) {
-					String result = student.enrollInCourse(courseId);
-					System.out.println(result);
-					if (result.equals(Student.validRequest)) {
-						String res = student.getUUID().toString() + ',' + student.getName()
-								+ ',' + courseId + ',' + getCourseName(courseId);
-						displayrequst.add(res);
-					}
+		return cGrantedRecords;
 
+	}
+
+	// Girish
+
+	// Amruta
+	public void uploadRequests(int semId) {
+
+		if (semId > 1) {
+			getCourseRequests().addAll(
+					createCourseRequests((parseCSV(Utility.waitListedFile + "_"
+							+ (semId - 1) + ".csv"))));
+		}
+		setCourseRequests(createCourseRequests((parseCSV(Utility.requestsFileName
+				+ "_" + semId + ".csv"))));
+		// setRequestsHM(createRequests(parseCSV(Utility.requestsFileName+"_"+semId+".csv")));
+	}
+
+	// section copied methods from Digest class
+	public static void check_request(Integer studentId, Integer courseId) {
+
+		ArrayList<Student> students = getStudents();
+		for (Iterator<Student> iterator = students.iterator(); iterator
+				.hasNext();) {
+			Student student = (Student) iterator.next();
+			if (student.getUUID().equals(studentId)) {
+				String result = student.enrollInCourse(courseId);
+				System.out.println(result);
+				if (result.equals(Student.validRequest)) {
+					String res = student.getUUID().toString() + ','
+							+ student.getName() + ',' + courseId + ','
+							+ getCourseName(courseId);
+					displayrequst.add(res);
 				}
 
 			}
 
 		}
-		//section copied methods from Digest class
-		public static void displayRequestdigest(HashMap<Integer, Integer> request,
-				ArrayList<Student> students) {
-			int validrequest = 0;
-			int missingpre = 0;
-			int alreadytaken = 0;
-			int noseat = 0;
-			grantedRequests = new ArrayList<CourseRequest>();
-			waitListedRequests = new ArrayList<CourseRequest>();
-			CourseRequest cReq = new CourseRequest();
-			
-			System.out.println("Processed Requests");
-			
-			for (Entry<?, ?> req : request.entrySet())
+
+	}
+
+	// section copied methods from Digest class
+	public static void displayRequestdigest(ArrayList<CourseRequest> request, // HashMap<Integer,
+																				// Integer>
+			ArrayList<Student> students) {
+		int validrequest = 0;
+		int missingpre = 0;
+		int alreadytaken = 0;
+		int noseat = 0;
+		grantedRequests = new ArrayList<CourseRequest>();
+		waitListedRequests = new ArrayList<CourseRequest>();
+		CourseRequest cReq = new CourseRequest();
+
+		System.out.println("Processed Requests");
+
+		// for (Entry<?, ?> req : request.entrySet())
+		for (Iterator iterator1 = request.iterator(); iterator1.hasNext();) {
+			CourseRequest req = (CourseRequest) iterator1.next();
+
+			// }
 			{
 				for (Iterator<Student> iterator = students.iterator(); iterator
 						.hasNext();) {
 					Student student = (Student) iterator.next();
 					Integer studentId = student.getUUID();
-					
-					if (studentId.equals(req.getKey())) 
-					{
-						int courseId = (int) req.getValue();
+
+					if (studentId.equals(req.getStudenttId())) {
+						int courseId = (int) req.getCourseId();
 						cReq = new CourseRequest();
 						cReq.setCourseId(courseId);
 						cReq.setStudenttId(studentId);
-						
-						String result = student
-								.enrollInCourse(courseId);
-						if (result.equals(Student.validRequest)) 
-						{
+
+						String result = student.enrollInCourse(courseId);
+						if (result.equals(Student.validRequest)) {
 							validrequest = validrequest + 1;
 							String res = student.getUUID().toString() + ','
-									+ student.getName() + ',' + req.getValue() + ','
-									+ getCourseName(req.getValue());
-							
+									+ student.getName() + ','
+									+ req.getCourseId() + ','
+									+ getCourseName(req.getCourseId());
+
 							displayrequst.add(res);
-							
+
 							grantedRequests.add(cReq);
-							
-							
-							System.out.println("request ("+student.getUUID().toString()+", "+(int) req.getValue()+"): valid");
-							
+
+							System.out.println("request ("
+									+ student.getUUID().toString() + ", "
+									+ (int) req.getCourseId() + "): valid");
+
 						}
-						if (result.equals(Student.alreadyTakenCourse))
-						{
-							System.out.println("request ("+student.getUUID().toString()+", "
-						+(int) req.getValue()+"): student has already taken the course with a grade of C or higher");
+						if (result.equals(Student.alreadyTakenCourse)) {
+							System.out
+									.println("request ("
+											+ student.getUUID().toString()
+											+ ", "
+											+ (int) req.getCourseId()
+											+ "): student has already taken the course with a grade of C or higher");
 							alreadytaken = alreadytaken + 1;
 						}
-						if (result.equals(Student.missingPrerequisite))
-						{
+						if (result.equals(Student.missingPrerequisite)) {
 							missingpre = missingpre + 1;
-							System.out.println("request ("+student.getUUID().toString()+", "+(int) req.getValue()
-							+"): student is missing one or more prerequisites");
+							System.out
+									.println("request ("
+											+ student.getUUID().toString()
+											+ ", "
+											+ (int) req.getCourseId()
+											+ "): student is missing one or more prerequisites");
 						}
-						if (result.equals(Student.noSeatsAvailable))
-						{
+						if (result.equals(Student.noSeatsAvailable)) {
 							noseat = noseat + 1;
 							waitListedRequests.add(cReq);
-							System.out.println("request ("+student.getUUID().toString()+", "+(int) req.getValue()
-							+"): no remaining seats at this time: (re-)added to waitlist");
+							System.out
+									.println("request ("
+											+ student.getUUID().toString()
+											+ ", "
+											+ (int) req.getCourseId()
+											+ "): no remaining seats at this time: (re-)added to waitlist");
 						}
 
 					}
 				}
 			}
-			
-			int totalReqInSem = validrequest+ alreadytaken + missingpre + noseat;
-			
+
+			int totalReqInSem = validrequest + alreadytaken + missingpre
+					+ noseat;
+
 			System.out.println("");
 			System.out.println("Semester Statistics");
-			System.out.println("Examined: "+ totalReqInSem +" Granted: "+validrequest+ " Failed: "
-			+ (alreadytaken + missingpre)+ " Listed: "+noseat);
+			System.out.println("Examined: " + totalReqInSem + " Granted: "
+					+ validrequest + " Failed: " + (alreadytaken + missingpre)
+					+ " Listed: " + noseat);
 			System.out.println("Total Statistics");
-			
-			//TODO : Need to change the total statistic for all sems calculations
-			System.out.println("Examined: "+ totalReqInSem +" Granted: "+validrequest+ " Failed: "
-					+ (alreadytaken + missingpre)+ " Listed: "+noseat);
-			
-			//add granted requests to records file with random grades
+
+			// TODO : Need to change the total statistic for all sems
+			// calculations
+			System.out.println("Examined: " + totalReqInSem + " Granted: "
+					+ validrequest + " Failed: " + (alreadytaken + missingpre)
+					+ " Listed: " + noseat);
+
+			// add granted requests to records file with random grades
 			createGrantedRecords(grantedRequests);
-			
-			//add waited requests to waitlist_semid file
+
+			// add waited requests to waitlist_semid file
 			createWaitListFile(waitListedRequests);
-
-		}
-		
-		//section copied methods from Digest class
-		public  HashMap<Integer, Integer> createRequests(
-				ArrayList<ArrayList<Object>> requests) {
-			HashMap<Integer, Integer> hm = new LinkedHashMap<>();
-			for (Iterator<ArrayList<Object>> iterator = requests.iterator(); iterator
-					.hasNext();) {
-				ArrayList<Object> arrayList = (ArrayList<Object>) iterator.next();
-				hm.put(Integer.parseInt((String) arrayList.get(0)),
-						Integer.parseInt((String) arrayList.get(1)));
-
-			}
-			return hm;
-
 		}
 
-		public HashMap<Integer, Integer> getRequestsHM() {
-			return requestsHM;
-		}
+	}
 
-		public void setRequestsHM(HashMap<Integer, Integer> requestsHM) {
-			this.requestsHM = requestsHM;
-		}
+	public ArrayList<CourseRequest> createCourseRequests(
+			ArrayList<ArrayList<Object>> requests) {
+		ArrayList<CourseRequest> cr = new ArrayList<CourseRequest>();
+		for (Iterator<ArrayList<Object>> iterator = requests.iterator(); iterator
+				.hasNext();) {
+			ArrayList<Object> arrayList = (ArrayList<Object>) iterator.next();
+			CourseRequest courserequest = new CourseRequest();
+			courserequest.setCourseId(Integer.parseInt((String) arrayList
+					.get(1)));
+			courserequest.setStudenttId(Integer.parseInt((String) arrayList
+					.get(0)));
 
-		public static int getCurrentSemId() {
-			return currentSemId;
 		}
+		return cr;
 
-		public static void setCurrentSemId(int currentSemId) {
-			Utility.currentSemId = currentSemId;
+	}
+
+	// section copied methods from Digest class
+	public HashMap<Integer, Integer> createRequests(
+			ArrayList<ArrayList<Object>> requests) {
+		HashMap<Integer, Integer> hm = new LinkedHashMap<>();
+		for (Iterator<ArrayList<Object>> iterator = requests.iterator(); iterator
+				.hasNext();) {
+			ArrayList<Object> arrayList = (ArrayList<Object>) iterator.next();
+			hm.put(Integer.parseInt((String) arrayList.get(0)),
+					Integer.parseInt((String) arrayList.get(1)));
+
 		}
+		return hm;
 
-		public static String getProjrecordsfile() {
-			return projrecordsfile;
-		}
+	}
 
-		public static void setProjrecordsfile(String projrecordsfile) {
-			Utility.projrecordsfile = projrecordsfile;
-		}
+	//
+	// public HashMap<Integer, Integer> getRequestsHM() {
+	// return requestsHM;
+	// }
 
-		
-		
+	// public void setRequestsHM(HashMap<Integer, Integer> requestsHM) {
+	// this.requestsHM = requestsHM;
+	// }
+
+	public static int getCurrentSemId() {
+		return currentSemId;
+	}
+
+	public static void setCurrentSemId(int currentSemId) {
+		Utility.currentSemId = currentSemId;
+	}
+
+	public static String getProjrecordsfile() {
+		return projrecordsfile;
+	}
+
+	public static void setProjrecordsfile(String projrecordsfile) {
+		Utility.projrecordsfile = projrecordsfile;
+	}
+
 }

@@ -209,7 +209,7 @@ public class Admin extends Person implements IPredicionTool {
 		utility.uploadRequests(semId);
 		
 		//Print statistics
-		utility.displayRequestdigest(utility.getRequestsHM(), utility.getStudents());
+		utility.displayRequestdigest(utility.getCourseRequests(), utility.getStudents());
 		
 		System.out.println("$continue simulation? [yes/no]:");
 		String toContinue = scin.next();
