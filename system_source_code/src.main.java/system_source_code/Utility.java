@@ -55,6 +55,11 @@ public class Utility {
 	private static String projrecordsfile = "projectedrecords.csv";
 	private static String projectedRecordsFileName = "projectedrecords";
 	// Amruta
+	
+	//Girish
+	private static String grantedRecordsFile ="grantedrecords.csv";
+	private static String grantedRecordsFileName ="grantedrecords";
+	//Girish
 
 	private static String new_line_separater = "\n";
 	private static String file_header = "";
@@ -472,8 +477,6 @@ public class Utility {
 			assignments = parseCSV(assignmentsFileName + "_" + semId + ".csv");
 			setAssignments(assignments);
 
-			
-			createGrantedRecords(new ArrayList<CourseRequest> ());
 
 		} else {
 			// todo use intermediate assignments file for semester N+1
@@ -626,127 +629,189 @@ public class Utility {
 	}
 	
 	//Girish
-		private static Grade getrandomGrades()
-		{
-			double gr = Math.random();
-		
-			if(gr <0.10)
-				return Grade.C;
-			else if(gr < 0.30)
-				return Grade.A;
-			else if(gr < 0.40)
-				return Grade.B;
-			else if(gr < 0.60)
-				return Grade.D;
-			else
-				return Grade.F;
-				
-			
-		}
-		
-		public ArrayList<Record> createGrantedRecords(ArrayList<CourseRequest> cRequests)
-		{
-			
-			
-			
-			  cRequests = new ArrayList<CourseRequest>();
-		
-		 	CourseRequest cr1 = new CourseRequest();
-			cr1.setCourseId(2);
-			//cr1.setinstructorid(10);
-			cr1.setStudenttId(20);
-			
-			/*CourseRequest cr2 = new CourseRequest();
-			cr2.setCourseId(2);
-			//cr2.setinstructorid(11);
-			cr2.setStudenttId(21);
-			
-			CourseRequest cr3 = new CourseRequest();
-			cr3.setCourseId(3);
-			//cr3.setinstructorid(12);
-			cr3.setStudenttId(22);
-			
-			CourseRequest cr4 = new CourseRequest();
-			cr4.setCourseId(4);
-			//cr4.setinstructorid(13);
-			cr4.setStudenttId(23);
-			
-			CourseRequest cr5 = new CourseRequest();
-			cr5.setCourseId(1);
-			//cr5.setinstructorid(10);
-			cr5.setStudenttId(24);
-			
-			CourseRequest cr6 = new CourseRequest();
-			cr6.setCourseId(5);
-			//cr6.setinstructorid(14);
-			cr6.setStudenttId(25);
-			
-			CourseRequest cr7 = new CourseRequest();
-			cr7.setCourseId(6);
-			//cr7.setinstructorid(15);
-			cr7.setStudenttId(26);
-			
-			CourseRequest cr8 = new CourseRequest();
-			cr8.setCourseId(7);
-			//cr8.setinstructorid(16);
-			cr8.setStudenttId(27);
-			
-			CourseRequest cr9 = new CourseRequest();
-			cr9.setCourseId(8);
-			//cr9.setinstructorid(17);
-			cr9.setStudenttId(28);
-			
-			CourseRequest cr10 = new CourseRequest();
-			cr10.setCourseId(9);
-			//cr10.setinstructorid(18);
-			cr10.setStudenttId(29);
-			
-			cRequests.add(cr1);
-			/*cRequests.add(cr2);
-			cRequests.add(cr3);
-			cRequests.add(cr4);
-			cRequests.add(cr5);
-			cRequests.add(cr6);
-			cRequests.add(cr6);
-			cRequests.add(cr8);
-			cRequests.add(cr9);
-			cRequests.add(cr10);*/
-			
-			cRequests.add(cr1);
-			
-			ArrayList<Record> cGrantedRecords = new ArrayList<Record>();
-			
-			for(CourseRequest cR : cRequests)
+			private static Grade getrandomGrades()
 			{
-				List<Course> courses = CourseCatalogue.getCourses();
+				double gr = Math.random();
 			
-				int cid = cR.getCourseId();
-				Course c = CourseCatalogue.getCourse(cid);
+				double[] probabilities = {0.10, 0.30, 0.40,0.10,0.10};
 				
-				HashMap<Person,Integer> instructorsMap = c.getInstructors_capacity();
-				Instructor ins = null;
-				Record rec = null;
+				Grade[] grades = Grade.values();
 				
-				if(instructorsMap!=null && !instructorsMap.isEmpty())
+				double cdf = 0.0;
+				
+				for(int i=0; i < grades.length; i++)
 				{
-					Set<Person> pset = instructorsMap.keySet();
-					Object[] persons = pset.toArray();
-				    ins = (Instructor)(persons[0]);
-					
+					cdf += probabilities[i];
+					if(gr < cdf)
+						return grades[i];
 				}
+				return grades[grades.length - 1];			
 				
-				if(ins!=null)
-				{
-					rec = new Record(cR.getStudenttId(),cR.getCourseId(),ins.getUUID(),"Random Comment",getrandomGrades());
-					
-					if(!cGrantedRecords.contains(rec))
-						cGrantedRecords.add(rec);
-				}
 			}
+		
+			public static ArrayList<Record> createGrantedRecords(ArrayList<CourseRequest> cRequests)
+			{
+				
+				
+				
+				/*cRequests = new ArrayList<CourseRequest>();
 			
-			return cGrantedRecords;
+			 	CourseRequest cr1 = new CourseRequest();
+				cr1.setCourseId(2);
+				//cr1.setinstructorid(10);
+				cr1.setStudenttId(20);
+				
+				CourseRequest cr2 = new CourseRequest();
+				cr2.setCourseId(4);
+				//cr2.setinstructorid(11);
+				cr2.setStudenttId(21);
+				
+				CourseRequest cr3 = new CourseRequest();
+				cr3.setCourseId(6);
+				//cr3.setinstructorid(12);
+				cr3.setStudenttId(22);
+				
+				CourseRequest cr4 = new CourseRequest();
+				cr4.setCourseId(8);
+				//cr4.setinstructorid(13);
+				cr4.setStudenttId(23);
+				
+				CourseRequest cr5 = new CourseRequest();
+				cr5.setCourseId(10);
+				//cr5.setinstructorid(10);
+				cr5.setStudenttId(24);
+				
+				CourseRequest cr6 = new CourseRequest();
+				cr6.setCourseId(13);
+				//cr6.setinstructorid(14);
+				cr6.setStudenttId(25);
+				
+				CourseRequest cr7 = new CourseRequest();
+				cr7.setCourseId(16);
+				//cr7.setinstructorid(15);
+				cr7.setStudenttId(26);
+				
+				CourseRequest cr8 = new CourseRequest();
+				cr8.setCourseId(17);
+				//cr8.setinstructorid(16);
+				cr8.setStudenttId(27);
+				
+				CourseRequest cr9 = new CourseRequest();
+				cr9.setCourseId(19);
+				//cr9.setinstructorid(17);
+				cr9.setStudenttId(28);
+				
+				CourseRequest cr10 = new CourseRequest();
+				cr10.setCourseId(20);
+				//cr10.setinstructorid(18);
+				cr10.setStudenttId(29);
+				
+				cRequests.add(cr1);
+				cRequests.add(cr2);
+				cRequests.add(cr3);
+				cRequests.add(cr4);
+				cRequests.add(cr5);
+				cRequests.add(cr6);
+				cRequests.add(cr6);
+				cRequests.add(cr8);
+				cRequests.add(cr9);
+				cRequests.add(cr10);*/
+				
+			
+				
+				ArrayList<Record> cGrantedRecords = new ArrayList<Record>();
+				
+				for(CourseRequest cR : cRequests)
+				{
+					List<Course> courses = CourseCatalogue.getCourses();
+				
+					int cid = cR.getCourseId();
+					Course c = CourseCatalogue.getCourse(cid);
+					
+					HashMap<Person,Integer> instructorsMap = c.getInstructors_capacity();
+					Instructor ins = null;
+					Record rec = null;
+					
+					if(instructorsMap!=null && !instructorsMap.isEmpty())
+					{
+						Set<Person> pset = instructorsMap.keySet();
+						Object[] persons = pset.toArray();
+					    ins = (Instructor)(persons[0]);
+						
+					}
+					
+					if(ins!=null)
+					{
+						rec = new Record(cR.getStudenttId(),cR.getCourseId(),ins.getUUID(),"Random Comment",getrandomGrades());
+						
+						if(!cGrantedRecords.contains(rec))
+							cGrantedRecords.add(rec);
+					}
+				}
+				
+				if(cGrantedRecords != null && !cGrantedRecords.isEmpty() && records !=null)
+				{
+					for(Record r : cGrantedRecords)
+					{
+						if(!records.contains(r))
+							records.add(r);
+					}	
+				}
+				
+				FileWriter fileWriter = null;
+				try
+				{
+					fileWriter = new FileWriter(grantedRecordsFile);
+					for (Record r : records) {
+						fileWriter.append(String.valueOf(r.getStudentID()));
+						fileWriter.append(COMMA_DELIMITER);
+						
+						fileWriter.append(String.valueOf(r.getCourseID()));
+						fileWriter.append(COMMA_DELIMITER);
+						
+						fileWriter.append(String.valueOf(r.getInstructorID()));
+						fileWriter.append(COMMA_DELIMITER);
+						
+						fileWriter.append(String.valueOf(r.getInstructorComment()));
+						fileWriter.append(COMMA_DELIMITER);
+						
+						fileWriter.append(String.valueOf(r.getGrade()));
+											
+						fileWriter.append(NEW_LINE_SEPARATOR);
+					}
+					
+					System.out
+					.println("Tmp Msg: GrantedRecords CSV file was created successfully !!!");
+				}			
+				catch (IOException e) 
+				{
 
-		}
+						System.out.println("Error in CsvFileWriter !!!");
+						e.printStackTrace();
+					
+				}
+				finally 
+				{
+						try {
+
+							fileWriter.flush();
+
+							fileWriter.close();
+
+						} catch (IOException e) {
+
+							System.out
+									.println("Error while flushing/closing fileWriter !!!");
+
+							e.printStackTrace();
+
+						}
+					}
+				
+				return cGrantedRecords;
+				
+
+			}
 		//Girish
 		
 		//Amruta
@@ -783,15 +848,21 @@ public class Utility {
 			int missingpre = 0;
 			int alreadytaken = 0;
 			int noseat = 0;
+			ArrayList<CourseRequest> grantedRequests = new ArrayList<CourseRequest>();
+			
 			System.out.println("Processed Requests");
 			
-			for (Entry<?, ?> req : request.entrySet()) {
+			for (Entry<?, ?> req : request.entrySet())
+			{
 				for (Iterator<Student> iterator = students.iterator(); iterator
 						.hasNext();) {
 					Student student = (Student) iterator.next();
-					if (student.getUUID().equals(req.getKey())) {
+					Integer studentId = student.getUUID();
+					if (studentId.equals(req.getKey())) 
+					{
+						int courseId = (int) req.getValue();
 						String result = student
-								.enrollInCourse((int) req.getValue());
+								.enrollInCourse(courseId);
 						if (result.equals(Student.validRequest)) 
 						{
 							validrequest = validrequest + 1;
@@ -800,6 +871,13 @@ public class Utility {
 									+ getCourseName(req.getValue());
 							
 							displayrequst.add(res);
+							
+							CourseRequest grantedCR = new CourseRequest();
+							grantedCR.setCourseId(courseId);
+							grantedCR.setStudenttId(studentId);
+							grantedRequests.add(grantedCR);
+							
+							
 							System.out.println("request ("+student.getUUID().toString()+", "+(int) req.getValue()+"): valid");
 							
 						}
@@ -838,6 +916,8 @@ public class Utility {
 			System.out.println("Examined: "+ totalReqInSem +" Granted: "+validrequest+ " Failed: "
 					+ (alreadytaken + missingpre)+ " Listed: "+noseat);
 			
+			//add granted requests to records file with random grades
+			createGrantedRecords(grantedRequests);
 
 		}
 		
