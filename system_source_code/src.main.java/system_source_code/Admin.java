@@ -45,7 +45,7 @@ public class Admin extends Person implements IPredicionTool {
 		Instances newData = null;
 
 		try {
-			data = DataSource.read(projRecordsFilepah);
+			data = DataSource.read(Utility.getProjrecordsfile());
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -125,6 +125,7 @@ public class Admin extends Person implements IPredicionTool {
 		{
 			utility.getUnselected().put(index,utility.getSelected().get(index));
 			utility.getSelected().remove(index);
+			System.out.println("instructor released!");
 		}
 		else
 		{
@@ -146,16 +147,18 @@ public class Admin extends Person implements IPredicionTool {
 
 	}
 
-	public void processSemester(int semId) {
+	public boolean processSemester(int semId) {
 
 		System.out.println("Tmp comment: Processing semester number " + semId);
 
 		AppMode currentMode = Utility.getMode();
 
 		utility.processRecords(currentMode, semId);
+		
+		Utility.setCurrentSemId(semId);
 
 		// Step1 :Convert records.csv to projectedrecords file:Done
-		utility.getProjectedRecords();
+		utility.createProjRecordsFile();
 
 		readPredictions();
 
@@ -192,8 +195,9 @@ public class Admin extends Person implements IPredicionTool {
 			case "submit":
 				// to do submit the selections till now
 				//call next process semester now
-				;
+				System.out.println("selections finalized - now processing requests for Semester "+semId);
 				utility.addAssignments(utility.getSelected().values());
+				
 				isInvalidInput = false;
 				break;
 			default:
@@ -207,7 +211,19 @@ public class Admin extends Person implements IPredicionTool {
 		//Print statistics
 		utility.displayRequestdigest(utility.getRequestsHM(), utility.getStudents());
 		
+		System.out.println("$continue simulation? [yes/no]:");
+		String toContinue = scin.next();
 		
+		boolean answer = false;
+		
+		switch(toContinue.toLowerCase())
+		{
+			case "yes":
+				answer = true;
+				break;
+		}
+		
+		return answer;
 		/*
 		 * utility = new Utility(); utility.designateSemester(semId);
 		 * ArrayList<?> predictions = getDataPreditions();

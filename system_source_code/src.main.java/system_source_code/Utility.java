@@ -27,6 +27,8 @@ public class Utility {
 	private static ArrayList<Instructor> instructors;
 	private static ArrayList<Student> students;
 	private static ArrayList<Record> records;
+	private static ArrayList<CourseRequest> waitListedRequests;
+	private static ArrayList<CourseRequest> grantedRequests;
 	private static ArrayList<ArrayList<Object>> assignments;
 	public static void setAssignments(ArrayList<ArrayList<Object>> assignments) {
 		Utility.assignments = assignments;
@@ -37,6 +39,8 @@ public class Utility {
 
 	private static String recordsFileName = "records";
 	private static String recordscsvFile = "records.csv";
+	private static String waitListedFileName ="waitlist";
+	private static String waitListedFile ="waitlist.csv";
 	private static String studentscsvFile = "students.csv";
 	private static String instructorscsvFile = "instructors.csv";
 	private static String coursescsvFile = "courses.csv";
@@ -52,8 +56,11 @@ public class Utility {
 	private static final String COMMA_DELIMITER = ",";
 	private static final String NEW_LINE_SEPARATOR = "\n";
 	private static String FILE_HEADER = "";
-	private static String projrecordsfile = "projectedrecords.csv";
-	private static String projectedRecordsFileName = "projectedrecords";
+	private static String baseFolder = "src.main.java//";
+	private static String projrecordsfile = baseFolder+"projectedrecords.csv";
+	private static String projectedRecordsFileName = baseFolder+"projectedrecords";
+	private static int currentSemId;
+	
 	// Amruta
 	
 	//Girish
@@ -101,19 +108,32 @@ public class Utility {
 
 	// process records file as per current mode
 
-	public void processRecords(AppMode mode, int semId) {
-		if (mode == AppMode.Resume) {
-			recordscsvFile = recordsFileName + "_" + semId;
-			projrecordsfile = projectedRecordsFileName + "_" + semId;
+	public void processRecords(AppMode mode, int semId) 
+	{
+		String recordscsvFile = "";
+		
+		
+		if(semId == 1)
+			recordscsvFile = "records.csv";
+		
+		else
+		{
+			recordscsvFile = recordsFileName + "_" + (semId-1)+".csv";
+			setProjrecordsfile(projectedRecordsFileName + "_" +(semId-1)+".csv");
 		}
-		// Pre2: Load semester independent files records.csv and requests.csv,
-		// student.csv ....:To be Done
-		String recordscsvFile = "records.csv";
-		// for creating records
+	
+		try
+		{
 
 		ArrayList<Record> records = createRecords(new Digest()
 				.parseCSV(recordscsvFile));
+		System.out.println("total records.."+records.size());
 		setRecords(records);
+		}
+		catch(Exception ex)
+		{
+			System.out.println("msg "+ex.getMessage());
+		}
 
 	}
 
@@ -502,10 +522,54 @@ public class Utility {
 	}
 
 	// Amruta
-	public void getProjectedRecords() {
+	
+	public static void createWaitListFile(ArrayList<CourseRequest> waitedRequests)
+	{
+		FileWriter fileWriter = null;
+		try {
+
+			fileWriter = new FileWriter(waitListedFileName+"_"+getCurrentSemId()+".csv");
+			for(CourseRequest request:waitedRequests)
+			{
+				fileWriter.append(String.valueOf(request.getStudenttId()));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(String.valueOf(request.getCourseId()));
+				fileWriter.append(NEW_LINE_SEPARATOR);
+			}
+		}
+		catch (IOException e) {
+
+			System.out.println("Error in CsvFileWriter !!!");
+			e.printStackTrace();
+		} finally {
+			try {
+
+				fileWriter.flush();
+
+				fileWriter.close();
+
+			} catch (IOException e) {
+
+				System.out
+						.println("Error while flushing/closing fileWriter !!!");
+
+				e.printStackTrace();
+
+			}
+		}
+		System.out
+		.println("Tmp Msg: Waitlisted CSV file was created successfully !!!");
+		
+	}
+	
+	public void createProjRecordsFile() {
+		
 		List<Integer> uniqueStudents = new ArrayList<Integer>();
 		List<Integer> uniqueCourses = new ArrayList<Integer>();
 
+		System.out.println("tmp msg records count "+records.size());
+		FILE_HEADER ="";
+		
 		for (Record rec : records) {
 			int sid = rec.getStudentID();
 			int cid = rec.getCourseID();
@@ -532,7 +596,8 @@ public class Utility {
 
 		try {
 
-			fileWriter = new FileWriter(projrecordsfile);
+			System.out.println("tmp msg projfilepath "+getProjrecordsfile());
+			fileWriter = new FileWriter(getProjrecordsfile());
 			// Add header
 			fileWriter.append(FILE_HEADER.toString());
 			fileWriter.append(NEW_LINE_SEPARATOR);
@@ -557,7 +622,7 @@ public class Utility {
 			}
 
 			System.out
-					.println("Tmp Msg: CSV file was created successfully !!!");
+					.println("Tmp Msg:Projected records CSV file was created successfully !!!");
 
 		} catch (IOException e) {
 
@@ -761,7 +826,9 @@ public class Utility {
 				FileWriter fileWriter = null;
 				try
 				{
-					fileWriter = new FileWriter(grantedRecordsFile);
+					String tmpRecords = "";
+					tmpRecords = baseFolder+recordsFileName;
+					fileWriter = new FileWriter(tmpRecords+"_"+getCurrentSemId()+".csv");
 					for (Record r : records) {
 						fileWriter.append(String.valueOf(r.getStudentID()));
 						fileWriter.append(COMMA_DELIMITER);
@@ -848,7 +915,9 @@ public class Utility {
 			int missingpre = 0;
 			int alreadytaken = 0;
 			int noseat = 0;
-			ArrayList<CourseRequest> grantedRequests = new ArrayList<CourseRequest>();
+			grantedRequests = new ArrayList<CourseRequest>();
+			waitListedRequests = new ArrayList<CourseRequest>();
+			CourseRequest cReq = new CourseRequest();
 			
 			System.out.println("Processed Requests");
 			
@@ -858,9 +927,14 @@ public class Utility {
 						.hasNext();) {
 					Student student = (Student) iterator.next();
 					Integer studentId = student.getUUID();
+					
 					if (studentId.equals(req.getKey())) 
 					{
 						int courseId = (int) req.getValue();
+						cReq = new CourseRequest();
+						cReq.setCourseId(courseId);
+						cReq.setStudenttId(studentId);
+						
 						String result = student
 								.enrollInCourse(courseId);
 						if (result.equals(Student.validRequest)) 
@@ -872,10 +946,7 @@ public class Utility {
 							
 							displayrequst.add(res);
 							
-							CourseRequest grantedCR = new CourseRequest();
-							grantedCR.setCourseId(courseId);
-							grantedCR.setStudenttId(studentId);
-							grantedRequests.add(grantedCR);
+							grantedRequests.add(cReq);
 							
 							
 							System.out.println("request ("+student.getUUID().toString()+", "+(int) req.getValue()+"): valid");
@@ -896,6 +967,7 @@ public class Utility {
 						if (result.equals(Student.noSeatsAvailable))
 						{
 							noseat = noseat + 1;
+							waitListedRequests.add(cReq);
 							System.out.println("request ("+student.getUUID().toString()+", "+(int) req.getValue()
 							+"): no remaining seats at this time: (re-)added to waitlist");
 						}
@@ -918,6 +990,9 @@ public class Utility {
 			
 			//add granted requests to records file with random grades
 			createGrantedRecords(grantedRequests);
+			
+			//add waited requests to waitlist_semid file
+			createWaitListFile(waitListedRequests);
 
 		}
 		
@@ -942,6 +1017,22 @@ public class Utility {
 
 		public void setRequestsHM(HashMap<Integer, Integer> requestsHM) {
 			this.requestsHM = requestsHM;
+		}
+
+		public static int getCurrentSemId() {
+			return currentSemId;
+		}
+
+		public static void setCurrentSemId(int currentSemId) {
+			Utility.currentSemId = currentSemId;
+		}
+
+		public static String getProjrecordsfile() {
+			return projrecordsfile;
+		}
+
+		public static void setProjrecordsfile(String projrecordsfile) {
+			Utility.projrecordsfile = projrecordsfile;
 		}
 
 		

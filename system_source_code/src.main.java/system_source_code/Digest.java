@@ -186,7 +186,16 @@ public class Digest {
 		
 		for(;currentSem<=noOfSems;currentSem++)
 		{
-			admin.processSemester(currentSem);
+			boolean processSem = false;
+			
+			processSem	= admin.processSemester(currentSem);
+			
+			if(processSem)
+				continue;
+			else 
+				break;
+				
+			
 		}	
 		
 		
@@ -201,7 +210,7 @@ public class Digest {
 	public static int getNoOfSemesters()
 	{
 		int num = 0;
-		return 1;//todo count no of assignments file
+		return 3;//todo count no of assignments file
 		
 	}
 
