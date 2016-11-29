@@ -191,10 +191,12 @@ public class Utility {
 
 			Course course = CourseCatalogue.getCourse(Integer
 					.parseInt((String) arrayList.get(1)));
+			
 			ArrayList<Instructor> ins = getInstructors();
 			for (Iterator<Instructor> iterator2 = ins.iterator(); iterator2
 					.hasNext();) {
 				Instructor instructor = (Instructor) iterator2.next();
+				
 				if (instructor.getUUID() == Integer.parseInt((String) arrayList
 						.get(0))) {
 					HashMap<Person, Integer> hm = new HashMap<Person, Integer>();
@@ -854,13 +856,25 @@ public class Utility {
 	// Amruta
 	public void uploadRequests(int semId) {
 
+		ArrayList<CourseRequest> allRequests = new ArrayList<CourseRequest>();
+		ArrayList<CourseRequest> waitedRequests =  new ArrayList<CourseRequest>();
+		ArrayList<CourseRequest> fileRequests =  new ArrayList<CourseRequest>();
+		
 		if (semId > 1) {
-			getCourseRequests().addAll(
-					createCourseRequests((parseCSV(Utility.waitListedFileName + "_"
-							+ (semId - 1) + ".csv"))));
+			//getCourseRequests().addAll(
+				//	createCourseRequests((parseCSV(Utility.waitListedFileName + "_"
+							//+ (semId - 1) + ".csv"))));
+			
+			waitedRequests = createCourseRequests((parseCSV(Utility.waitListedFileName
+					+ "_" + (semId - 1) + ".csv")));
+			allRequests.addAll(waitedRequests);
+			System.out.println("waited: "+waitedRequests.size());
 		}
-		setCourseRequests(createCourseRequests((parseCSV(Utility.requestsFileName
-				+ "_" + semId + ".csv"))));
+		fileRequests = createCourseRequests((parseCSV(Utility.requestsFileName
+				+ "_" + semId + ".csv")));
+		allRequests.addAll(fileRequests);
+		setCourseRequests(allRequests);
+		
 		// setRequestsHM(createRequests(parseCSV(Utility.requestsFileName+"_"+semId+".csv")));
 	}
 
