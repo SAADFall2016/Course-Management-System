@@ -897,7 +897,7 @@ public class Utility {
 		int noseat = 0;
 		grantedRequests = new ArrayList<CourseRequest>();
 		waitListedRequests = new ArrayList<CourseRequest>();
-		CourseRequest cReq = new CourseRequest();
+		//CourseRequest cReq = new CourseRequest();
 
 		System.out.println("Processed Requests");
 
@@ -914,9 +914,9 @@ public class Utility {
 
 					if (studentId.equals(req.getStudenttId())) {
 						int courseId = (int) req.getCourseId();
-						cReq = new CourseRequest();
-						cReq.setCourseId(courseId);
-						cReq.setStudenttId(studentId);
+//						cReq = new CourseRequest();
+//						cReq.setCourseId(courseId);
+//						cReq.setStudenttId(studentId);
 
 						String result = student.enrollInCourse(courseId);
 						if (result.equals(Student.validRequest)) {
@@ -928,7 +928,7 @@ public class Utility {
 
 							displayrequst.add(res);
 
-							grantedRequests.add(cReq);
+							grantedRequests.add(req);
 
 							System.out.println("request ("
 									+ student.getUUID().toString() + ", "
@@ -955,7 +955,7 @@ public class Utility {
 						}
 						if (result.equals(Student.noSeatsAvailable)) {
 							noseat = noseat + 1;
-							waitListedRequests.add(cReq);
+							waitListedRequests.add(req);
 							System.out
 									.println("request ("
 											+ student.getUUID().toString()
@@ -967,6 +967,7 @@ public class Utility {
 					}
 				}
 			}
+		}
 
 			int totalReqInSem = validrequest + alreadytaken + missingpre
 					+ noseat;
@@ -989,7 +990,7 @@ public class Utility {
 
 			// add waited requests to waitlist_semid file
 			createWaitListFile(waitListedRequests);
-		}
+		
 
 	}
 
