@@ -856,7 +856,7 @@ public class Utility {
 
 		if (semId > 1) {
 			getCourseRequests().addAll(
-					createCourseRequests((parseCSV(Utility.waitListedFile + "_"
+					createCourseRequests((parseCSV(Utility.waitListedFileName + "_"
 							+ (semId - 1) + ".csv"))));
 		}
 		setCourseRequests(createCourseRequests((parseCSV(Utility.requestsFileName
@@ -1004,6 +1004,7 @@ public class Utility {
 					.get(1)));
 			courserequest.setStudenttId(Integer.parseInt((String) arrayList
 					.get(0)));
+			cr.add(courserequest);
 
 		}
 		return cr;

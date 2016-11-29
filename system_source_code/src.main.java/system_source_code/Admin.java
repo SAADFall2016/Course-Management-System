@@ -150,6 +150,8 @@ public class Admin extends Person implements IPredicionTool {
 	public boolean processSemester(int semId) {
 
 		System.out.println("Tmp comment: Processing semester number " + semId);
+		utility.getSelected().clear();
+		utility.getUnselected().clear();
 
 		AppMode currentMode = Utility.getMode();
 
