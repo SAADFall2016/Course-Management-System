@@ -1,11 +1,14 @@
 package system_source_code;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,6 +29,9 @@ public class Digest {
 	public static ArrayList<String> displayrequst = new ArrayList<String>();
 	static Utility util;
 	static AppMode currentMode;
+	private static String baseFolder = "//src.main.java";
+	private static String records = "records";
+	private static String assignments = "assignments_";
 	
 
 	public static void add_records(Integer studentID, Integer courseID,
@@ -157,6 +163,7 @@ public class Digest {
 		
 		args = new String[1];
 		args[0] = "initial";
+		int currentSem = 1;
 		
 		String strMode = args[0];
 		switch(strMode.toLowerCase())
@@ -168,6 +175,8 @@ public class Digest {
 			case "resume":
 				util = new Utility(AppMode.Resume);
 				currentMode = AppMode.Resume;
+				currentSem = getCurrentResumedSemNumber();
+				System.out.println("association analysis of previous course selections");
 				break;
 		}
 	
@@ -178,7 +187,8 @@ public class Digest {
 		
 		//Check how many semesters we are dealing with and process each semesters.
 		int noOfSems = getNoOfSemesters();
-		int currentSem = 1;
+		
+		
 		if(currentMode == AppMode.Resume)
 		{
 			currentSem = getCurrentResumedSemNumber();
@@ -191,7 +201,10 @@ public class Digest {
 			processSem	= admin.processSemester(currentSem);
 			
 			if(processSem)
+			{
+				
 				continue;
+			}
 			else 
 				break;
 				
@@ -203,14 +216,37 @@ public class Digest {
 	
 	public static int getCurrentResumedSemNumber()
 	{
-		//todo
-		return 1;
+		String workDirPath = System.getProperty("user.dir")+baseFolder;
+		File folder = new File(workDirPath);
+		File[] listOfFiles = folder.listFiles();
+		int fileCount = 0;
+		for (int i = 0; i < listOfFiles.length; i++) {
+		      if (listOfFiles[i].isFile())
+		      {
+		    	  if(listOfFiles[i].getName().startsWith(records))
+		    		  fileCount++;
+		    		
+		      }
+		    }
+		return fileCount;
 	}
 	
 	public static int getNoOfSemesters()
 	{
-		int num = 0;
-		return 3;//todo count no of assignments file
+		
+		String workDirPath = System.getProperty("user.dir")+baseFolder;
+		File folder = new File(workDirPath);
+		File[] listOfFiles = folder.listFiles();
+		int semCount = 0;
+		for (int i = 0; i < listOfFiles.length; i++) {
+		      if (listOfFiles[i].isFile())
+		      {
+		    	  if(listOfFiles[i].getName().startsWith(assignments))
+		    		  semCount++;
+		    		 // System.out.println("File " + listOfFiles[i].getName());
+		      }
+		    }
+		return semCount;
 		
 	}
 

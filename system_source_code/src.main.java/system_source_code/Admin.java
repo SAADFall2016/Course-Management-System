@@ -22,6 +22,7 @@ public class Admin extends Person implements IPredicionTool {
 	private Utility utility;
 	String projRecordsFilepah = "projectedrecords.csv";
 	private static final String EmptyString = "";
+	
 
 	/*
 	 * public static void main(String args[]) { Admin admin = new Admin(1,
@@ -180,7 +181,7 @@ public class Admin extends Person implements IPredicionTool {
 			switch ((String) elements[0]) {
 			case "display":
 				// Step3 :Roster selection:> Display :ToDo
-				utility.display_assignments();
+				Utility.display_assignments();
 				break;
 
 			case "add":
@@ -198,7 +199,7 @@ public class Admin extends Person implements IPredicionTool {
 				// to do submit the selections till now
 				//call next process semester now
 				System.out.println("selections finalized - now processing requests for Semester "+semId);
-				utility.addAssignments(utility.getSelected().values());
+				Utility.addAssignments(Utility.getSelected().values());
 				
 				isInvalidInput = false;
 				break;
@@ -211,7 +212,7 @@ public class Admin extends Person implements IPredicionTool {
 		utility.uploadRequests(semId);
 		
 		//Print statistics
-		utility.displayRequestdigest(utility.getCourseRequests(), utility.getStudents());
+		Utility.displayRequestdigest(Utility.getCourseRequests(), Utility.getStudents());
 		
 		System.out.println("$continue simulation? [yes/no]:");
 		String toContinue = scin.next();
@@ -222,6 +223,10 @@ public class Admin extends Person implements IPredicionTool {
 		{
 			case "yes":
 				answer = true;
+				break;
+			default:
+			case "no":
+				System.out.println("simulation halted");
 				break;
 		}
 		

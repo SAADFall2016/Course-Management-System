@@ -121,20 +121,21 @@ public class Utility {
 
 	public void processRecords(AppMode mode, int semId) {
 		String recordscsvFile = "";
+		String workDirPath = System.getProperty("user.dir")+"//src.main.java//";
 
 		if (semId == 1)
 			recordscsvFile = "records.csv";
 
 		else {
-			recordscsvFile = recordsFileName + "_" + (semId - 1) + ".csv";
+			recordscsvFile = workDirPath+ recordsFileName + "_" + (semId - 1) + ".csv";
 			setProjrecordsfile(projectedRecordsFileName + "_" + (semId - 1)
 					+ ".csv");
 		}
 
 		try {
 
-			ArrayList<Record> records = createRecords(new Digest()
-					.parseCSV(recordscsvFile));
+			ArrayList<Record> records = createRecords(
+					parseCSV(recordscsvFile));
 			System.out.println("total records.." + records.size());
 			setRecords(records);
 		} catch (Exception ex) {
@@ -446,9 +447,14 @@ public class Utility {
 		String line = "";
 		ArrayList<ArrayList<Object>> result = new ArrayList<ArrayList<Object>>();
 		try {
+			
 			InputStream stream = Utility.class.getClassLoader()
 					.getResourceAsStream(csvFile);
-			br = new BufferedReader(new InputStreamReader(stream));
+			
+			if(stream!=null)
+				br = new BufferedReader(new InputStreamReader(stream));
+			else
+				  br = new BufferedReader(new FileReader(csvFile));
 
 			while ((line = br.readLine()) != null) {
 
@@ -498,17 +504,10 @@ public class Utility {
 		ArrayList<ArrayList<Object>> prerequistes = parseCSV(prereqscsvFile);
 		addPrerequisiteCourse(prerequistes, courses);
 
-		if (getMode().equals(AppMode.Initial)) {
-
-			// records file has been already loaded.
-
-			// upload Instructor assignment file
-			assignments = parseCSV(assignmentsFileName + "_" + semId + ".csv");
-			setAssignments(assignments);
-
-		} else {
-			// todo use intermediate assignments file for semester N+1
-		}
+		
+		// upload Instructor assignment file
+		assignments = parseCSV(assignmentsFileName + "_" + semId + ".csv");
+		setAssignments(assignments);
 
 	}
 
@@ -628,8 +627,8 @@ public class Utility {
 
 			}
 
-			System.out
-					.println("Tmp Msg:Projected records CSV file was created successfully !!!");
+			//System.out
+				//	.println("Tmp Msg:Projected records CSV file was created successfully !!!");
 
 		} catch (IOException e) {
 
@@ -823,8 +822,8 @@ public class Utility {
 				fileWriter.append(NEW_LINE_SEPARATOR);
 			}
 
-			System.out
-					.println("Tmp Msg: GrantedRecords CSV file was created successfully !!!");
+			//System.out
+				//	.println("Tmp Msg: GrantedRecords CSV file was created successfully !!!");
 		} catch (IOException e) {
 
 			System.out.println("Error in CsvFileWriter !!!");
@@ -861,12 +860,13 @@ public class Utility {
 		ArrayList<CourseRequest> fileRequests =  new ArrayList<CourseRequest>();
 		
 		if (semId > 1) {
-			//getCourseRequests().addAll(
-				//	createCourseRequests((parseCSV(Utility.waitListedFileName + "_"
-							//+ (semId - 1) + ".csv"))));
-			
-			waitedRequests = createCourseRequests((parseCSV(Utility.waitListedFileName
+		
+			if(Utility.getMode() == AppMode.Resume)
+				waitedRequests = createCourseRequests((parseCSV(Utility.waitListedFileName
 					+ "_" + (semId - 1) + ".csv")));
+			else
+				waitedRequests = waitListedRequests;
+			
 			allRequests.addAll(waitedRequests);
 			System.out.println("waited: "+waitedRequests.size());
 		}
@@ -875,7 +875,7 @@ public class Utility {
 		allRequests.addAll(fileRequests);
 		setCourseRequests(allRequests);
 		
-		// setRequestsHM(createRequests(parseCSV(Utility.requestsFileName+"_"+semId+".csv")));
+		
 	}
 
 	// section copied methods from Digest class
@@ -950,7 +950,7 @@ public class Utility {
 
 						}
 						if (result.equals(Student.alreadyTakenCourse)) {
-							System.out
+							System.out	
 									.println("request ("
 											+ student.getUUID().toString()
 											+ ", "
@@ -969,7 +969,8 @@ public class Utility {
 						}
 						if (result.equals(Student.noSeatsAvailable)) {
 							noseat = noseat + 1;
-							waitListedRequests.add(req);
+							if(!waitListedRequests.contains(req))
+								waitListedRequests.add(req);
 							System.out
 									.println("request ("
 											+ student.getUUID().toString()
@@ -991,6 +992,7 @@ public class Utility {
 			System.out.println("Examined: " + totalReqInSem + " Granted: "
 					+ validrequest + " Failed: " + (alreadytaken + missingpre)
 					+ " Listed: " + noseat);
+			
 			System.out.println("Total Statistics");
 
 			// TODO : Need to change the total statistic for all sems

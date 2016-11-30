@@ -1,7 +1,9 @@
 package system_source_code;
 
-public class CourseRequest {
+
+public class CourseRequest implements Comparable<CourseRequest> {
 	private int studenttId;
+	private int courseId;
 
 	public int getStudenttId() {
 		return studenttId;
@@ -19,6 +21,15 @@ public class CourseRequest {
 		this.courseId = courseId;
 	}
 
-	private int courseId;
+	
+	
+	@Override
+	public int compareTo(CourseRequest o) {
+		
+		if(this.studenttId == o.studenttId && this.courseId==o.courseId)
+			return 0;
+		else 
+			return -1;
+	}
 
 }
