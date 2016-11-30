@@ -508,6 +508,10 @@ public class Utility {
 		// upload Instructor assignment file
 		assignments = parseCSV(assignmentsFileName + "_" + semId + ".csv");
 		setAssignments(assignments);
+		//mark all assignments as unselected
+		for (int i = 0; i < assignments.size(); i++) {
+			unselected.put(i, assignments.get(i));
+		}
 
 	}
 
@@ -667,12 +671,11 @@ public class Utility {
 
 		ArrayList<ArrayList<Object>> assignments = getAssignments();
 
-		if (selected.size() == 0 && unselected.size() == 0) {
-			for (int i = 0; i < assignments.size(); i++) {
-				unselected.put(i, assignments.get(i));
-
-			}
-		}
+//		if (selected.size() == 0 && unselected.size() == 0) {
+//			for (int i = 0; i < assignments.size(); i++) {
+//				unselected.put(i, assignments.get(i));
+//			}
+//		}
 
 		// print the selection
 		System.out.println("%------ selected -----");
