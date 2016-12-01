@@ -1,12 +1,14 @@
 package system_source_code;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,17 +48,22 @@ public class Utility {
 		CourseRequests = courseRequests;
 	}
 
+	private static String baseFolderTemp = System.getProperty("user.dir")+"//TEMP_FILES//";
+	private static String baseFolderTest = System.getProperty("user.dir")+"//TEST_FILES//";
+	
 	private static String recordsFileName = "records";
-	private static String recordscsvFile = "records.csv";
-	private static String waitListedFileName = "waitlist";
-	private static String waitListedFile = "waitlist.csv";
-	private static String studentscsvFile = "students.csv";
-	private static String instructorscsvFile = "instructors.csv";
-	private static String coursescsvFile = "courses.csv";
-	private static String prereqscsvFile = "prereqs.csv";
-	private static String assignmentsFileName = "assignments";
-	private static String requestsFileName = "requests";
-	private static String requestscsvFile = "requests.csv";
+	private static String waitList = "waitlist";
+	private static String requests = "requests";
+	private static String recordscsvFile = baseFolderTest+"records.csv";
+	private static String waitListedFileName = baseFolderTemp + waitList;
+
+	private static String studentscsvFile = baseFolderTest+"students.csv";
+	private static String instructorscsvFile = baseFolderTest+"instructors.csv";
+	private static String coursescsvFile = baseFolderTest+"courses.csv";
+	private static String prereqscsvFile = baseFolderTest+"prereqs.csv";
+	private static String assignmentsFileName = baseFolderTest+"assignments";
+	private static String requestsFileName = baseFolderTest+"requests";
+	private static String requestscsvFile = baseFolderTest+"requests.csv";
 	private static String modecsvFile = "mode.csv";
 	private static String isselected = "S";
 	private static String isunselected = "U";
@@ -65,11 +72,16 @@ public class Utility {
 	private static final String COMMA_DELIMITER = ",";
 	private static final String NEW_LINE_SEPARATOR = "\n";
 	private static String FILE_HEADER = "";
-	private static String baseFolder = "src.main.java//";
-	private static String projrecordsfile = baseFolder + "projectedrecords.csv";
-	private static String projectedRecordsFileName = baseFolder
+	//private static String baseFolder = "src.main.java//";
+	
+	private static String projrecordsfile = baseFolderTemp + "projectedrecords.csv";
+	private static String projectedRecordsFileName = baseFolderTemp
 			+ "projectedrecords";
 	private static int currentSemId;
+	
+	private static int noOfTotalWaitListedHistory = 0;
+	private static int noOfTotalGrantedHistory = 0;
+	private static int noOfTotalRequestsHistory = 0;
 
 	// Amruta
 
@@ -120,14 +132,12 @@ public class Utility {
 	// process records file as per current mode
 
 	public void processRecords(AppMode mode, int semId) {
-		String recordscsvFile = "";
-		String workDirPath = System.getProperty("user.dir")+"//src.main.java//";
+		
+		//String workDirPath = System.getProperty("user.dir")+"//src.main.java//";
 
-		if (semId == 1)
-			recordscsvFile = "records.csv";
-
-		else {
-			recordscsvFile = workDirPath+ recordsFileName + "_" + (semId - 1) + ".csv";
+		if (semId != 1)
+		{
+			recordscsvFile = baseFolderTemp+ recordsFileName + "_" + (semId - 1) + ".csv";
 			setProjrecordsfile(projectedRecordsFileName + "_" + (semId - 1)
 					+ ".csv");
 		}
@@ -485,13 +495,13 @@ public class Utility {
 
 		// load Students csv
 		// for creating students
-		ArrayList<Student> students = createStudents(new Digest()
-				.parseCSV(studentscsvFile));
+		ArrayList<Student> students = createStudents(
+				parseCSV(studentscsvFile));
 		setStudents(students);
 
 		// for creating Instructors
-		ArrayList<Instructor> instructors = createInstructor(new Digest()
-				.parseCSV(instructorscsvFile));
+		ArrayList<Instructor> instructors = createInstructor(
+				parseCSV(instructorscsvFile));
 		setInstructors(instructors);
 
 		// designate upcoming semeste
@@ -508,13 +518,132 @@ public class Utility {
 		// upload Instructor assignment file
 		assignments = parseCSV(assignmentsFileName + "_" + semId + ".csv");
 		setAssignments(assignments);
-		//mark all assignments as unselected
-		for (int i = 0; i < assignments.size(); i++) {
-			unselected.put(i, assignments.get(i));
+		
+		if(semId>1)
+		{
+			//maintain history of requests
+		noOfTotalWaitListedHistory = getTotalWaitlistedRequests(semId);
+		noOfTotalGrantedHistory = getTotalGrantedRequests(semId);
+		noOfTotalRequestsHistory = getTotalExaminedRequests(semId);
+		
+		
 		}
 
 	}
 
+	//get waitlisting before given semester
+	private int getTotalWaitlistedRequests(int semester)
+	{
+		String workDirPath = baseFolderTemp;
+		File folder = new File(workDirPath);
+		File[] listOfFiles = folder.listFiles();
+		int lineCount = 0;
+		for (int i = 0; i < listOfFiles.length; i++) {
+		      if (listOfFiles[i].isFile())
+		      {
+		    	  if(listOfFiles[i].getName().startsWith(waitList))
+		    	  {
+		    		  BufferedReader bufferedReader;
+					try {
+						bufferedReader = new BufferedReader(new FileReader(listOfFiles[i].getPath()));
+						 String input;
+		    		    
+		    		     while((input = bufferedReader.readLine()) != null)
+		    		     {
+		    		    	 lineCount++;
+		    		     }
+					} catch (FileNotFoundException e) {
+
+						e.printStackTrace();
+					}
+					catch(IOException ioe)
+					{
+						ioe.printStackTrace();
+					}
+		    		    
+		    	}
+		    		 
+		      }
+		    }
+		return lineCount;
+	}
+	
+	//get granted before given semester
+	private int getTotalGrantedRequests(int semester)
+	{
+		String workDirPath = baseFolderTemp;
+		File folder = new File(workDirPath);
+		File[] listOfFiles = folder.listFiles();
+		int lineCount = 0;
+		int recordFileNo = semester-1;
+		for (int i = 0; i < listOfFiles.length; i++) {
+		      if (listOfFiles[i].isFile())
+		      {
+		    	  if(listOfFiles[i].getName().startsWith(recordsFileName+"_"+recordFileNo))
+		    	  {
+		    		  BufferedReader bufferedReader;
+					try {
+						bufferedReader = new BufferedReader(new FileReader(listOfFiles[i].getPath()));
+						 String input;
+		    		    
+		    		     while((input = bufferedReader.readLine()) != null)
+		    		     {
+		    		    	 if(input.contains("Random Comment"))
+		    		    		 lineCount++;
+		    		     }
+					} catch (FileNotFoundException e) {
+
+						e.printStackTrace();
+					}
+					catch(IOException ioe)
+					{
+						ioe.printStackTrace();
+					}
+		    		    
+		    	}
+		    		 
+		      }
+		    }
+		return lineCount;
+	}
+	
+	//get granted before given semester
+	private int getTotalExaminedRequests(int semester)
+	{
+		String workDirPath = baseFolderTest;
+		File folder = new File(workDirPath);
+		File[] listOfFiles = folder.listFiles();
+		int lineCount = 0;
+		int requestFileNo = semester-1;
+		for (int i = 0; i < listOfFiles.length; i++) {
+		      if (listOfFiles[i].isFile())
+		      {
+		    	  if(listOfFiles[i].getName().startsWith(requests+"_"+requestFileNo))
+		    	  {
+		    		  BufferedReader bufferedReader;
+					try {
+						bufferedReader = new BufferedReader(new FileReader(listOfFiles[i].getPath()));
+						 String input;
+		    		    
+		    		     while((input = bufferedReader.readLine()) != null)
+		    		     {
+		    		    	 lineCount++;
+		    		     }
+					} catch (FileNotFoundException e) {
+
+						e.printStackTrace();
+					}
+					catch(IOException ioe)
+					{
+						ioe.printStackTrace();
+					}    
+		    	}
+		    		 
+		      }
+		    }
+		return lineCount;
+	}
+		
 	public static String getCourseName(Object value) {
 		for (Iterator<?> iterator = Utility.getCourses().iterator(); iterator
 				.hasNext();) {
@@ -539,7 +668,7 @@ public class Utility {
 		FileWriter fileWriter = null;
 		try {
 
-			fileWriter = new FileWriter(baseFolder + waitListedFileName + "_"
+			fileWriter = new FileWriter(waitListedFileName + "_"
 					+ getCurrentSemId() + ".csv");
 			for (CourseRequest request : waitedRequests) {
 				fileWriter.append(String.valueOf(request.getStudenttId()));
@@ -671,11 +800,12 @@ public class Utility {
 
 		ArrayList<ArrayList<Object>> assignments = getAssignments();
 
-//		if (selected.size() == 0 && unselected.size() == 0) {
-//			for (int i = 0; i < assignments.size(); i++) {
-//				unselected.put(i, assignments.get(i));
-//			}
-//		}
+		if (selected.size() == 0 && unselected.size() == 0) {
+			for (int i = 0; i < assignments.size(); i++) {
+				unselected.put(i, assignments.get(i));
+
+			}
+		}
 
 		// print the selection
 		System.out.println("%------ selected -----");
@@ -804,7 +934,7 @@ public class Utility {
 		FileWriter fileWriter = null;
 		try {
 			String tmpRecords = "";
-			tmpRecords = baseFolder + recordsFileName;
+			tmpRecords = baseFolderTemp + recordsFileName;
 			fileWriter = new FileWriter(tmpRecords + "_" + getCurrentSemId()
 					+ ".csv");
 			for (Record r : records) {
@@ -914,6 +1044,7 @@ public class Utility {
 		int noseat = 0;
 		grantedRequests = new ArrayList<CourseRequest>();
 		waitListedRequests = new ArrayList<CourseRequest>();
+		
 		//CourseRequest cReq = new CourseRequest();
 
 		System.out.println("Processed Requests");
@@ -998,17 +1129,22 @@ public class Utility {
 			
 			System.out.println("Total Statistics");
 
-			// TODO : Need to change the total statistic for all sems
-			// calculations
+			noseat = noOfTotalWaitListedHistory + noseat;
+			totalReqInSem = totalReqInSem + noOfTotalRequestsHistory;
+			validrequest = validrequest + noOfTotalGrantedHistory;
+			int failedTotal = totalReqInSem - (noseat + validrequest);
+			
 			System.out.println("Examined: " + totalReqInSem + " Granted: "
-					+ validrequest + " Failed: " + (alreadytaken + missingpre)
+					+ validrequest + " Failed: " + failedTotal
 					+ " Listed: " + noseat);
 
 			// add granted requests to records file with random grades
-			createGrantedRecords(grantedRequests);
+			if(!grantedRequests.isEmpty())
+				createGrantedRecords(grantedRequests);
 
 			// add waited requests to waitlist_semid file
-			createWaitListFile(waitListedRequests);
+			if(!waitListedRequests.isEmpty())
+				createWaitListFile(waitListedRequests);
 		
 
 	}
